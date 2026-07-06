@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>미래직업탐구 보고서 활동지</title>
+  <style>
+    :root {
+      --ink: #172331;
+      --muted: #5a6673;
+      --green: #1f6b35;
+      --green-dark: #164d28;
+      --green-soft: #eaf5ec;
+      --blue: #174b88;
+      --blue-soft: #edf5ff;
+      --line: #d5e1d8;
+      --canvas: #eef3f1;
+      --paper: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+      letter-spacing: 0;
+      line-height: 1.55;
+    }
+
+    body {
+      padding: 36px 20px;
+    }
+
+    .shell {
+      width: min(1040px, 100%);
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 28px 0 24px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .kicker {
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 900;
+      margin-bottom: 6px;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.12;
+      font-weight: 900;
+    }
+
+    .summary {
+      max-width: 760px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .worksheet-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .worksheet-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 260px;
+      padding: 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 12px 28px rgba(27, 52, 39, 0.10);
+    }
+
+    .worksheet-card.group {
+      border-top: 6px solid var(--green);
+    }
+
+    .worksheet-card.personal {
+      border-top: 6px solid var(--blue);
+    }
+
+    h2 {
+      font-size: 24px;
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    .card-copy {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .feature-list {
+      display: grid;
+      gap: 8px;
+      margin: 18px 0 22px;
+      padding: 0;
+      list-style: none;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    .feature-list li {
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .feature-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.72em;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      transform: translateY(-50%);
+    }
+
+    .personal .feature-list li::before {
+      background: var(--blue);
+    }
+
+    .open-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      margin-top: auto;
+      padding: 10px 14px;
+      border-radius: 6px;
+      background: var(--green);
+      color: #fff;
+      font-weight: 900;
+      text-decoration: none;
+    }
+
+    .personal .open-link {
+      background: var(--blue);
+    }
+
+    .notice {
+      margin-top: 18px;
+      padding: 14px 16px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .notice strong {
+      color: var(--ink);
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 24px 14px;
+      }
+
+      .worksheet-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .worksheet-card {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="kicker">미래직업탐구 보고서 활동지</div>
+      <h1>작성할 활동지를 선택하세요</h1>
+      <p class="summary">학교와 이름을 입력한 뒤 브라우저에서 바로 작성하고, 인쇄 화면에서 PDF로 저장할 수 있습니다.</p>
+    </section>
+
+    <section class="worksheet-grid" aria-label="활동지 선택">
+      <article class="worksheet-card group">
+        <h2>모둠 활동지</h2>
+        <p class="card-copy">AI 시대 직업 변화 읽기자료를 바탕으로 모둠의 탐구 주제를 정합니다.</p>
+        <ul class="feature-list">
+          <li>미래 직업 탐구 주제 정하기</li>
+          <li>학교, 모둠, 이름, 날짜 입력</li>
+          <li>브라우저 자동 저장 및 PDF 저장 지원</li>
+        </ul>
+        <a class="open-link" href="05차시_모둠활동지_PC작성용.html">모둠 활동지 작성</a>
+      </article>
+
+      <article class="worksheet-card personal">
+        <h2>개인 활동지</h2>
+        <p class="card-copy">내가 맡은 직업을 조사하고 발표자료에 넣을 핵심 내용을 정리합니다.</p>
+        <ul class="feature-list">
+          <li>개인 직업 탐구 정리</li>
+          <li>학교, 모둠, 이름, 날짜 입력</li>
+          <li>브라우저 자동 저장 및 PDF 저장 지원</li>
+        </ul>
+        <a class="open-link" href="06차시_개인활동지_직업탐구_PC작성용.html">개인 활동지 작성</a>
+      </article>
+    </section>
+
+    <aside class="notice">
+      <strong>PDF 저장:</strong> 활동지 작성 화면에서 <strong>인쇄 / PDF 저장</strong>을 누른 뒤, 프린터 대상을 <strong>PDF로 저장</strong>으로 선택하면 작성된 내용이 포함된 PDF를 받을 수 있습니다.
+    </aside>
+  </main>
+</body>
+</html>
