@@ -1007,13 +1007,31 @@
         print-color-adjust: exact;
       }
     }
+
+    body.pdf-export-mode {
+      background: #fff;
+      padding: 0;
+    }
+
+    body.pdf-export-mode .screen-toolbar,
+    body.pdf-export-mode .tutor-panel,
+    body.pdf-export-mode .tutor-field-button {
+      display: none !important;
+    }
+
+    body.pdf-export-mode .page {
+      margin: 0 auto;
+      box-shadow: none;
+      overflow: visible;
+    }
   </style>
 </head>
 <body data-worksheet="group">
   <div class="screen-toolbar">
     <span><a class="toolbar-link" href="index.html">활동지 선택</a> · 브라우저에서 직접 작성할 수 있습니다. 입력 내용은 이 브라우저에 자동 저장됩니다.</span>
     <div class="toolbar-actions">
-      <button class="toolbar-button" type="button" onclick="window.print()">인쇄 / PDF 저장</button>
+      <button class="toolbar-button" type="button" data-download-pdf onclick="window.downloadWorksheetPdf?.(this)">PDF 바로 저장</button>
+      <button class="toolbar-button secondary" type="button" onclick="window.print()">인쇄</button>
       <button class="toolbar-button secondary" type="button" data-clear-form>입력 내용 초기화</button>
     </div>
   </div>
@@ -1200,8 +1218,10 @@
       });
     })();
   </script>
+  <script src="vendor/html2canvas.min.js"></script>
+  <script src="vendor/jspdf.umd.min.js"></script>
+  <script src="pdf-export.js?v=20260706-8"></script>
   <script src="tutor-config.js?v=20260706-5"></script>
   <script src="tutor.js?v=20260706-5"></script>
 </body>
 </html>
-
