@@ -237,6 +237,10 @@
       box-shadow: none;
     }
 
+    .print-value {
+      display: none;
+    }
+
     .toolbar-link {
       color: var(--green);
       font-weight: 800;
@@ -725,6 +729,7 @@
       .page {
         margin: 0;
         box-shadow: none;
+        overflow: visible;
       }
 
       .screen-toolbar,
@@ -737,6 +742,51 @@
       .fill-area {
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
+      }
+
+      .print-ready .fill-input,
+      .print-ready .fill-area {
+        display: none !important;
+      }
+
+      .print-ready .print-value {
+        display: block;
+        width: 100%;
+        min-height: 26px;
+        color: var(--ink);
+        background: #fff;
+        font-size: 12px;
+        line-height: 1.55;
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .print-ready .print-value.singleline {
+        min-height: 27px;
+        padding: 2px 4px;
+        border-bottom: 1.5px solid #8eb99a;
+      }
+
+      .print-ready .print-value.multiline {
+        min-height: 52px;
+        padding: 3px 4px;
+        background-image: repeating-linear-gradient(
+          to bottom,
+          transparent 0,
+          transparent 25px,
+          #cadbd0 26px
+        );
+      }
+
+      .candidate-table tr,
+      .response-table tr,
+      .source-table tr,
+      .info-table tr,
+      .prepare-table tr {
+        break-inside: avoid;
       }
     }
 
@@ -762,7 +812,7 @@
   <div class="screen-toolbar">
     <span><a class="toolbar-link" href="index.html">활동지 선택</a> · 브라우저에서 직접 작성할 수 있습니다. 입력 내용은 이 브라우저에 자동 저장됩니다.</span>
     <div class="toolbar-actions">
-      <button class="toolbar-button" type="button" data-download-pdf onclick="window.downloadWorksheetPdf?.(this)">PDF 바로 저장</button>
+      <button class="toolbar-button" type="button" data-download-pdf>PDF 저장</button>
       <button class="toolbar-button secondary" type="button" onclick="window.print()">인쇄</button>
       <button class="toolbar-button secondary" type="button" data-clear-form>입력 내용 초기화</button>
     </div>
@@ -1034,9 +1084,7 @@
       });
     })();
   </script>
-  <script src="vendor/html2canvas.min.js"></script>
-  <script src="vendor/jspdf.umd.min.js"></script>
-  <script src="pdf-export.js?v=20260706-8"></script>
+  <script src="pdf-export.js?v=20260706-9"></script>
   <script src="tutor-config.js?v=20260706-5"></script>
   <script src="tutor.js?v=20260706-5"></script>
 </body>
