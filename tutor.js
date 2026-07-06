@@ -51,22 +51,81 @@
     return panel;
   }
 
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function inlineMarkdown(value) {
+    return escapeHtml(value)
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/`(.+?)`/g, "<code>$1</code>");
+  }
+
+  function renderMarkdown(value) {
+    const lines = String(value || "").replace(/\r\n?/g, "\n").split("\n");
+    const html = [];
+    let listType = "";
+
+    function closeList() {
+      if (!listType) return;
+      html.push(`</${listType}>`);
+      listType = "";
+    }
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      if (!line) {
+        closeList();
+        continue;
+      }
+
+      const bullet = line.match(/^[-*]\s+(.+)$/);
+      const numbered = line.match(/^\d+\.\s+(.+)$/);
+
+      if (bullet || numbered) {
+        const nextType = numbered ? "ol" : "ul";
+        if (listType !== nextType) {
+          closeList();
+          html.push(`<${nextType}>`);
+          listType = nextType;
+        }
+        html.push(`<li>${inlineMarkdown((bullet || numbered)[1])}</li>`);
+        continue;
+      }
+
+      closeList();
+      html.push(`<p>${inlineMarkdown(line)}</p>`);
+    }
+
+    closeList();
+    return `<div class="tutor-markdown">${html.join("")}</div>`;
+  }
+
+  function showMessage(body, message) {
+    body.innerHTML = `<div class="tutor-message">${escapeHtml(message)}</div>`;
+  }
+
   async function requestTip(panel) {
     panel.classList.add("open");
     const body = panel.querySelector(".tutor-body");
 
     if (!apiUrl) {
-      body.textContent = "AI 튜터 API 주소가 아직 설정되지 않았습니다.";
+      showMessage(body, "AI 튜터 API 주소가 아직 설정되지 않았습니다.");
       return;
     }
 
     const target = latestAnswer();
     if (!target) {
-      body.textContent = "먼저 도움을 받고 싶은 작성 칸에 내용을 조금 적어주세요.";
+      showMessage(body, "먼저 도움을 받고 싶은 작성 칸에 내용을 조금 적어주세요.");
       return;
     }
 
-    body.textContent = "작성 팁을 불러오는 중입니다...";
+    showMessage(body, "작성 팁을 불러오는 중입니다...");
 
     try {
       const response = await fetch(apiUrl, {
@@ -82,9 +141,9 @@
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "요청에 실패했습니다.");
-      body.textContent = data.tip;
+      body.innerHTML = renderMarkdown(data.tip);
     } catch (error) {
-      body.textContent = error.message;
+      showMessage(body, error.message);
     }
   }
 

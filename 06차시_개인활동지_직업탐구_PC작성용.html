@@ -114,11 +114,55 @@
     .tutor-body {
       max-height: 430px;
       overflow: auto;
-      padding: 13px 14px;
+      padding: 14px 16px;
       color: var(--ink);
       font-size: 13px;
       line-height: 1.6;
-      white-space: pre-line;
+    }
+
+    .tutor-message {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .tutor-markdown {
+      display: grid;
+      gap: 10px;
+    }
+
+    .tutor-markdown p,
+    .tutor-markdown ul,
+    .tutor-markdown ol {
+      margin: 0;
+    }
+
+    .tutor-markdown p {
+      font-weight: 800;
+      color: var(--green);
+    }
+
+    .tutor-markdown ul,
+    .tutor-markdown ol {
+      padding-left: 20px;
+    }
+
+    .tutor-markdown li {
+      margin: 4px 0;
+      padding-left: 2px;
+    }
+
+    .tutor-markdown strong {
+      color: var(--green);
+      font-weight: 900;
+    }
+
+    .tutor-markdown code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-family: inherit;
+      font-weight: 800;
     }
 
     .toolbar-link {
