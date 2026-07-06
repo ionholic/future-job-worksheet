@@ -66,6 +66,24 @@ async function readJson(request) {
   };
 }
 
+function extractOutputText(data) {
+  if (typeof data.output_text === "string" && data.output_text.trim()) {
+    return data.output_text.trim();
+  }
+
+  const output = Array.isArray(data.output) ? data.output : [];
+  const parts = [];
+  for (const item of output) {
+    const content = Array.isArray(item.content) ? item.content : [];
+    for (const block of content) {
+      if (typeof block.text === "string" && block.text.trim()) {
+        parts.push(block.text.trim());
+      }
+    }
+  }
+  return parts.join("\n\n").trim();
+}
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("origin") || "";
@@ -112,7 +130,7 @@ export default {
       }
 
       const data = await openaiResponse.json();
-      const text = data.output_text || "도움말을 생성하지 못했습니다. 작성 내용을 조금 더 구체적으로 적어 다시 시도해 주세요.";
+      const text = extractOutputText(data) || "도움말을 생성하지 못했습니다. 작성 내용을 조금 더 구체적으로 적어 다시 시도해 주세요.";
       return jsonResponse({ tip: text }, 200, origin, env);
     } catch (error) {
       console.error(JSON.stringify({ error: error.message }));
