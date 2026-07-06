@@ -68,6 +68,60 @@
       gap: 8px;
     }
 
+    .tutor-panel {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 30;
+      width: min(380px, calc(100vw - 36px));
+      max-height: min(520px, calc(100vh - 36px));
+      display: none;
+      background: #fff;
+      border: 1.5px solid var(--green-line);
+      border-radius: 8px;
+      box-shadow: 0 16px 34px rgba(23, 35, 49, 0.18);
+      overflow: hidden;
+    }
+
+    .tutor-panel.open {
+      display: block;
+    }
+
+    .tutor-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      background: var(--green-soft);
+      color: var(--green);
+      font-size: 14px;
+      font-weight: 900;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tutor-close {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--green-line);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--green);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .tutor-body {
+      max-height: 430px;
+      overflow: auto;
+      padding: 13px 14px;
+      color: var(--ink);
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-line;
+    }
+
     .toolbar-link {
       color: var(--green);
       font-weight: 800;
@@ -837,7 +891,7 @@
     }
   </style>
 </head>
-<body>
+<body data-worksheet="group">
   <div class="screen-toolbar">
     <span><a class="toolbar-link" href="index.html">활동지 선택</a> · 브라우저에서 직접 작성할 수 있습니다. 입력 내용은 이 브라우저에 자동 저장됩니다.</span>
     <div class="toolbar-actions">
@@ -1028,6 +1082,8 @@
       });
     })();
   </script>
+  <script src="tutor-config.js"></script>
+  <script src="tutor.js"></script>
 </body>
 </html>
 

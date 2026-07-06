@@ -1,0 +1,13 @@
+{
+  "name": "future-job-worksheet",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy",
+    "worker:check": "wrangler deploy --dry-run"
+  },
+  "devDependencies": {
+    "wrangler": "^4.107.0"
+  }
+}

@@ -32,3 +32,55 @@ http://127.0.0.1:8765/index.html
 ## PDF 저장
 
 각 활동지 화면에서 `인쇄 / PDF 저장` 버튼을 누른 뒤, 브라우저 인쇄 창에서 대상을 `PDF로 저장`으로 선택합니다.
+
+## AI 튜터 설정
+
+AI 작성 팁 기능은 Cloudflare Worker를 통해 OpenAI API를 호출합니다. OpenAI API 키는 절대 HTML, JavaScript, GitHub 저장소에 넣지 말고 Cloudflare secret으로만 저장합니다.
+
+### 1. Cloudflare 로그인
+
+```bash
+npx wrangler login
+```
+
+브라우저에서 Cloudflare 로그인을 완료합니다.
+
+### 2. OpenAI API 키 secret 등록
+
+이미 채팅이나 문서에 노출된 API 키는 폐기하고 새 키를 발급한 뒤 사용합니다.
+
+```bash
+npx wrangler secret put OPENAI_API_KEY
+```
+
+명령 실행 후 새 OpenAI API 키를 붙여넣습니다. 입력값은 Cloudflare secret으로 저장되며 코드에 기록되지 않습니다.
+
+### 3. Worker 배포
+
+```bash
+npm run worker:deploy
+```
+
+배포가 완료되면 `https://future-job-worksheet-tutor.<계정명>.workers.dev` 형식의 URL이 출력됩니다.
+
+### 4. 활동지에 Worker URL 연결
+
+`tutor-config.js` 파일의 값을 배포된 Worker URL로 바꿉니다.
+
+```js
+window.TUTOR_API_URL = "https://future-job-worksheet-tutor.<계정명>.workers.dev";
+```
+
+수정 후 GitHub에 다시 push하면 GitHub Pages 활동지에서 `AI 작성 팁` 버튼이 실제로 동작합니다.
+
+```bash
+git add .
+git commit -m "Configure AI tutor endpoint"
+git push
+```
+
+### 참고
+
+- 기본 모델은 `gpt-5.4-mini`입니다.
+- CORS 허용 origin은 `https://ionholic.github.io`로 제한되어 있습니다.
+- 사용자가 작성한 학교/이름 입력칸은 AI 튜터 요청에서 제외됩니다.

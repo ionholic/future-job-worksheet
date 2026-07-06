@@ -1,0 +1,14 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "future-job-worksheet-tutor",
+  "main": "worker/src/index.js",
+  "compatibility_date": "2026-07-06",
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "vars": {
+    "ALLOWED_ORIGIN": "https://ionholic.github.io",
+    "MODEL": "gpt-5.4-mini"
+  }
+}
