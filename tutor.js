@@ -144,6 +144,44 @@
     };
   }
 
+  function collectIndexedValues(selectorPrefix, label) {
+    const rows = [];
+    for (let index = 1; index <= 8; index += 1) {
+      const field = document.querySelector(`[data-save="${selectorPrefix}${index}"]`);
+      if (!field) continue;
+      const value = field.value.trim();
+      if (value) rows.push(`${index}. ${label}: ${value}`);
+    }
+    return rows;
+  }
+
+  function getKeywordTarget(card, prefix, fallbackQuestion) {
+    const fields = Array.from(card.querySelectorAll(`[data-save^="${prefix}"]`));
+    return {
+      field: fields.find((field) => field.value.trim()) || fields[0],
+      answer: collectIndexedValues(prefix, "키워드").join("\n"),
+      question: cleanText(card.querySelector(".question-title")?.innerText) || fallbackQuestion,
+      section: findSection(fields[0])
+    };
+  }
+
+  function getCandidateTarget(box) {
+    const fields = Array.from(box.querySelectorAll("[data-save^='page3-candidate-'], [data-save^='page3-reason-']"));
+    const rows = [];
+    for (let index = 1; index <= 6; index += 1) {
+      const candidate = box.querySelector(`[data-save="page3-candidate-${index}"]`)?.value.trim();
+      const reason = box.querySelector(`[data-save="page3-reason-${index}"]`)?.value.trim();
+      if (candidate || reason) rows.push(`${index}. 직업군/일: ${candidate || "(비어 있음)"} / 이유: ${reason || "(비어 있음)"}`);
+    }
+
+    return {
+      field: fields.find((field) => field.value.trim()) || fields[0],
+      answer: rows.join("\n"),
+      question: cleanText(box.querySelector(".write-head")?.innerText) || "조사하고 싶은 직업군 / 일과 이유",
+      section: findSection(fields[0])
+    };
+  }
+
   function createIconButton(panel, targetFactory) {
     const button = document.createElement("button");
     button.className = "tutor-field-button";
@@ -217,12 +255,15 @@
   function addFieldButtons() {
     const panel = createPanel();
     addReferenceTableButton(panel);
+    addGroupWorksheetButtons(panel);
 
     const fields = Array.from(document.querySelectorAll("[data-save]")).filter((field) => {
       return !field.classList.contains("meta-input")
         && !field.closest(".meta-line")
         && !field.closest(".tutor-field-wrap")
-        && !field.matches("[data-save^='source-origin-'], [data-save^='source-note-']");
+        && !field.matches("[data-save^='source-origin-'], [data-save^='source-note-']")
+        && !field.matches("[data-save^='page1-decrease-keyword-'], [data-save^='page1-new-keyword-']")
+        && !field.matches("[data-save^='page3-candidate-'], [data-save^='page3-reason-']");
     });
 
     for (const field of fields) {
@@ -256,6 +297,40 @@
     const button = createIconButton(panel, () => getReferenceTarget(box));
     button.dataset.referenceTutor = "true";
     wrapper.appendChild(button);
+  }
+
+  function appendHeadingButton(container, button) {
+    button.classList.add("tutor-heading-button");
+    container.appendChild(button);
+  }
+
+  function addGroupWorksheetButtons(panel) {
+    const decreaseField = document.querySelector("[data-save='page1-decrease-keyword-1']");
+    const decreaseCard = decreaseField?.closest(".answer-card");
+    const decreaseTitle = decreaseCard?.querySelector(".question-title");
+    if (decreaseCard && decreaseTitle && !decreaseCard.querySelector("[data-group-tutor='decrease']")) {
+      const button = createIconButton(panel, () => getKeywordTarget(decreaseCard, "page1-decrease-keyword-", "사라지거나 줄어들 것으로 예상되는 직업"));
+      button.dataset.groupTutor = "decrease";
+      appendHeadingButton(decreaseTitle, button);
+    }
+
+    const newField = document.querySelector("[data-save='page1-new-keyword-1']");
+    const newCard = newField?.closest(".answer-card");
+    const newTitle = newCard?.querySelector(".question-title");
+    if (newCard && newTitle && !newCard.querySelector("[data-group-tutor='new']")) {
+      const button = createIconButton(panel, () => getKeywordTarget(newCard, "page1-new-keyword-", "새롭게 생겨날 직업"));
+      button.dataset.groupTutor = "new";
+      appendHeadingButton(newTitle, button);
+    }
+
+    const candidateField = document.querySelector("[data-save='page3-candidate-1']");
+    const candidateBox = candidateField?.closest(".write-box");
+    const candidateHead = candidateBox?.querySelector(".write-head");
+    if (candidateBox && candidateHead && !candidateBox.querySelector("[data-group-tutor='candidate']")) {
+      const button = createIconButton(panel, () => getCandidateTarget(candidateBox));
+      button.dataset.groupTutor = "candidate";
+      appendHeadingButton(candidateHead, button);
+    }
   }
 
   if (document.readyState === "loading") {
