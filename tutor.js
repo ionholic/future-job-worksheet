@@ -1,39 +1,32 @@
 (function () {
   const apiUrl = window.TUTOR_API_URL || "";
 
+  function cleanText(value) {
+    return String(value || "").replace(/\s+/g, " ").trim();
+  }
+
   function findQuestion(field) {
     const row = field.closest("tr");
-    if (row?.querySelector("th")) return row.querySelector("th").innerText.trim();
+    const cell = field.closest("td, th");
+    const rowLabel = cleanText(row?.querySelector("th, .prepare-type")?.innerText);
+    const headerCell = cell?.cellIndex >= 0
+      ? field.closest("table")?.querySelector(`thead th:nth-child(${cell.cellIndex + 1})`)
+      : null;
+    const columnLabel = cleanText(headerCell?.innerText);
+    if (rowLabel && columnLabel && rowLabel !== columnLabel) return `${rowLabel} / ${columnLabel}`;
+    if (rowLabel) return rowLabel;
+    if (columnLabel) return columnLabel;
     const card = field.closest(".answer-card, .answer-stack, .write-box");
     const title = card?.querySelector(".question-title, .write-head");
-    return title?.innerText.trim() || field.getAttribute("aria-label") || "작성 항목";
+    return cleanText(title?.innerText) || cleanText(field.getAttribute("aria-label")) || "작성 항목";
   }
 
   function findSection(field) {
     const page = field.closest(".page");
-    const heading = page?.querySelector("h1")?.innerText.trim();
+    const heading = cleanText(page?.querySelector("h1")?.innerText);
     const box = field.closest(".write-box");
-    const boxTitle = box?.querySelector(".write-head")?.innerText.trim();
+    const boxTitle = cleanText(box?.querySelector(".write-head")?.innerText);
     return [heading, boxTitle].filter(Boolean).join(" / ");
-  }
-
-  function selectedFields() {
-    return Array.from(document.querySelectorAll("[data-save]")).filter((field) => {
-      const value = field.value.trim();
-      return value.length > 0 && !field.classList.contains("meta-input");
-    });
-  }
-
-  function latestAnswer() {
-    const active = document.activeElement?.matches?.("[data-save]") ? document.activeElement : null;
-    const field = active || selectedFields().at(-1);
-    if (!field) return null;
-    return {
-      field,
-      answer: field.value.trim(),
-      question: findQuestion(field),
-      section: findSection(field)
-    };
   }
 
   function createPanel() {
@@ -41,10 +34,11 @@
     panel.className = "tutor-panel";
     panel.innerHTML = [
       '<div class="tutor-head">',
-      "<strong>AI 작성 팁</strong>",
+      '<strong>AI 작성 팁</strong>',
       '<button type="button" class="tutor-close" aria-label="AI 작성 팁 닫기">×</button>',
       "</div>",
-      '<div class="tutor-body">작성 중인 칸을 클릭한 뒤 작성 팁을 받아보세요.</div>'
+      '<div class="tutor-question">질문 옆 아이콘을 눌러 작성 팁을 받아보세요.</div>',
+      '<div class="tutor-body"><div class="tutor-message">도움이 필요한 질문의 아이콘을 선택하세요.</div></div>'
     ].join("");
     document.body.appendChild(panel);
     panel.querySelector(".tutor-close").addEventListener("click", () => panel.classList.remove("open"));
@@ -124,18 +118,35 @@
     body.innerHTML = `<div class="tutor-message">${escapeHtml(message)}</div>`;
   }
 
-  async function requestTip(panel) {
+  function getTarget(field) {
+    return {
+      field,
+      answer: field.value.trim(),
+      question: findQuestion(field),
+      section: findSection(field)
+    };
+  }
+
+  async function requestTip(panel, target) {
     panel.classList.add("open");
     const body = panel.querySelector(".tutor-body");
+    const questionLine = panel.querySelector(".tutor-question");
 
     if (!apiUrl) {
       showMessage(body, "AI 튜터 API 주소가 아직 설정되지 않았습니다.");
       return;
     }
 
-    const target = latestAnswer();
     if (!target) {
       showMessage(body, "먼저 도움을 받고 싶은 작성 칸에 내용을 조금 적어주세요.");
+      return;
+    }
+
+    questionLine.textContent = target.question;
+
+    if (!target.answer) {
+      showMessage(body, "먼저 이 칸에 생각을 조금 적어주세요.");
+      target.field.focus();
       return;
     }
 
@@ -163,19 +174,39 @@
 
   function addButton() {
     if (!apiUrl) return;
+    addFieldButtons();
+  }
 
-    const actions = document.querySelector(".toolbar-actions");
-    if (!actions || actions.querySelector("[data-tutor-tip]")) return;
+  function iconSvg() {
+    return [
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">',
+      '<path d="M12 3l1.6 4.2L18 8.8l-4.4 1.6L12 15l-1.6-4.6L6 8.8l4.4-1.6L12 3z"></path>',
+      '<path d="M18 14l.8 2.2L21 17l-2.2.8L18 20l-.8-2.2L15 17l2.2-.8L18 14z"></path>',
+      '</svg>'
+    ].join("");
+  }
 
-    const button = document.createElement("button");
-    button.className = "toolbar-button secondary";
-    button.type = "button";
-    button.dataset.tutorTip = "true";
-    button.textContent = "AI 작성 팁";
-    actions.prepend(button);
-
+  function addFieldButtons() {
     const panel = createPanel();
-    button.addEventListener("click", () => requestTip(panel));
+    const fields = Array.from(document.querySelectorAll("[data-save]")).filter((field) => {
+      return !field.classList.contains("meta-input") && !field.closest(".meta-line") && !field.closest(".tutor-field-wrap");
+    });
+
+    for (const field of fields) {
+      const wrapper = document.createElement("span");
+      wrapper.className = "tutor-field-wrap";
+      field.parentNode.insertBefore(wrapper, field);
+      wrapper.appendChild(field);
+
+      const button = document.createElement("button");
+      button.className = "tutor-field-button";
+      button.type = "button";
+      button.title = "이 질문 AI 작성 팁";
+      button.setAttribute("aria-label", "이 질문 AI 작성 팁 보기");
+      button.innerHTML = iconSvg();
+      button.addEventListener("click", () => requestTip(panel, getTarget(field)));
+      wrapper.appendChild(button);
+    }
   }
 
   if (document.readyState === "loading") {

@@ -3,8 +3,10 @@ const JSON_HEADERS = {
 };
 
 function corsHeaders(origin, env) {
-  const allowedOrigin = env.ALLOWED_ORIGIN || "*";
-  const allowOrigin = allowedOrigin === "*" || origin === allowedOrigin ? origin || allowedOrigin : allowedOrigin;
+  const allowedOrigins = String(env.ALLOWED_ORIGIN || "*").split(",").map((value) => value.trim()).filter(Boolean);
+  const allowOrigin = allowedOrigins.includes("*") || allowedOrigins.includes(origin)
+    ? origin || allowedOrigins[0]
+    : allowedOrigins[0];
 
   return {
     "access-control-allow-origin": allowOrigin,

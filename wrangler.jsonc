@@ -8,7 +8,7 @@
     "head_sampling_rate": 1
   },
   "vars": {
-    "ALLOWED_ORIGIN": "https://ionholic.github.io",
+    "ALLOWED_ORIGIN": "https://ionholic.github.io,http://127.0.0.1:8765,http://127.0.0.1:8766,http://127.0.0.1:8767,http://127.0.0.1:8877,http://localhost:8765,http://localhost:8766,http://localhost:8767,http://localhost:8877",
     "MODEL": "gpt-5.4-mini"
   }
 }
