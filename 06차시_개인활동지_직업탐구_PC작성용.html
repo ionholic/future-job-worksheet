@@ -127,18 +127,30 @@
 
     .tutor-markdown {
       display: grid;
-      gap: 10px;
+      gap: 8px;
     }
 
+    .tutor-markdown h3,
     .tutor-markdown p,
     .tutor-markdown ul,
     .tutor-markdown ol {
       margin: 0;
     }
 
-    .tutor-markdown p {
-      font-weight: 800;
+    .tutor-markdown h3 {
+      margin-top: 4px;
+      padding: 8px 10px;
+      border-left: 4px solid var(--green);
+      border-radius: 6px;
+      background: var(--green-soft);
       color: var(--green);
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .tutor-markdown p {
+      color: var(--ink);
     }
 
     .tutor-markdown ul,
@@ -147,7 +159,7 @@
     }
 
     .tutor-markdown li {
-      margin: 4px 0;
+      margin: 5px 0;
       padding-left: 2px;
     }
 
@@ -942,7 +954,7 @@
       });
     })();
   </script>
-  <script src="tutor-config.js"></script>
-  <script src="tutor.js"></script>
+  <script src="tutor-config.js?v=20260706-2"></script>
+  <script src="tutor.js?v=20260706-2"></script>
 </body>
 </html>

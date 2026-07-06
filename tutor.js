@@ -86,9 +86,23 @@
 
       const bullet = line.match(/^[-*]\s+(.+)$/);
       const numbered = line.match(/^\d+\.\s+(.+)$/);
+      const heading = line.match(/^#{1,3}\s+(.+)$/);
+      const numberedHeading = line.match(/^\d+\.\s+\*\*(.+?)\*\*$/) || line.match(/^\d+\.\s+(.+)$/);
+
+      if (heading) {
+        closeList();
+        html.push(`<h3>${inlineMarkdown(heading[1])}</h3>`);
+        continue;
+      }
+
+      if (numberedHeading && /\*\*.+?\*\*/.test(line)) {
+        closeList();
+        html.push(`<h3>${inlineMarkdown(numberedHeading[1])}</h3>`);
+        continue;
+      }
 
       if (bullet || numbered) {
-        const nextType = numbered ? "ol" : "ul";
+        const nextType = "ul";
         if (listType !== nextType) {
           closeList();
           html.push(`<${nextType}>`);
