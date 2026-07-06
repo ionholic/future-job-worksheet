@@ -127,6 +127,34 @@
     };
   }
 
+  function getReferenceTarget(box) {
+    const fields = Array.from(box.querySelectorAll("[data-save^='source-origin-'], [data-save^='source-note-']"));
+    const rows = [];
+    for (let index = 1; index <= 4; index += 1) {
+      const origin = box.querySelector(`[data-save="source-origin-${index}"]`)?.value.trim();
+      const note = box.querySelector(`[data-save="source-note-${index}"]`)?.value.trim();
+      if (origin || note) rows.push(`${index}. 출처: ${origin || "(비어 있음)"} / 확인한 내용: ${note || "(비어 있음)"}`);
+    }
+
+    return {
+      field: fields.find((field) => field.value.trim()) || fields[0],
+      answer: rows.join("\n"),
+      question: cleanText(box.querySelector(".write-head")?.innerText) || "참고한 자료 기록하기",
+      section: findSection(box.querySelector("[data-save]"))
+    };
+  }
+
+  function createIconButton(panel, targetFactory) {
+    const button = document.createElement("button");
+    button.className = "tutor-field-button";
+    button.type = "button";
+    button.title = "이 질문 AI 작성 팁";
+    button.setAttribute("aria-label", "이 질문 AI 작성 팁 보기");
+    button.innerHTML = iconSvg();
+    button.addEventListener("click", () => requestTip(panel, targetFactory()));
+    return button;
+  }
+
   async function requestTip(panel, target) {
     panel.classList.add("open");
     const body = panel.querySelector(".tutor-body");
@@ -188,8 +216,13 @@
 
   function addFieldButtons() {
     const panel = createPanel();
+    addReferenceTableButton(panel);
+
     const fields = Array.from(document.querySelectorAll("[data-save]")).filter((field) => {
-      return !field.classList.contains("meta-input") && !field.closest(".meta-line") && !field.closest(".tutor-field-wrap");
+      return !field.classList.contains("meta-input")
+        && !field.closest(".meta-line")
+        && !field.closest(".tutor-field-wrap")
+        && !field.matches("[data-save^='source-origin-'], [data-save^='source-note-']");
     });
 
     for (const field of fields) {
@@ -198,15 +231,31 @@
       field.parentNode.insertBefore(wrapper, field);
       wrapper.appendChild(field);
 
-      const button = document.createElement("button");
-      button.className = "tutor-field-button";
-      button.type = "button";
-      button.title = "이 질문 AI 작성 팁";
-      button.setAttribute("aria-label", "이 질문 AI 작성 팁 보기");
-      button.innerHTML = iconSvg();
-      button.addEventListener("click", () => requestTip(panel, getTarget(field)));
-      wrapper.appendChild(button);
+      wrapper.appendChild(createIconButton(panel, () => getTarget(field)));
     }
+  }
+
+  function addReferenceTableButton(panel) {
+    const firstField = document.querySelector("[data-save='source-origin-1']");
+    const box = firstField?.closest(".write-box");
+    if (!box || box.querySelector("[data-reference-tutor]")) return;
+
+    const head = box.querySelector(".write-head");
+    if (head) {
+      const button = createIconButton(panel, () => getReferenceTarget(box));
+      button.dataset.referenceTutor = "true";
+      button.classList.add("tutor-heading-button");
+      head.appendChild(button);
+      return;
+    }
+
+    const wrapper = document.createElement("span");
+    wrapper.className = "tutor-field-wrap";
+    firstField.parentNode.insertBefore(wrapper, firstField);
+    wrapper.appendChild(firstField);
+    const button = createIconButton(panel, () => getReferenceTarget(box));
+    button.dataset.referenceTutor = "true";
+    wrapper.appendChild(button);
   }
 
   if (document.readyState === "loading") {
