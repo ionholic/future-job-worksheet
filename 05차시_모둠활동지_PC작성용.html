@@ -4,1128 +4,102 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>모둠 활동지 - 미래 직업 탐구 주제 정하기</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="worksheet.css?v=20261125-1" />
   <style>
-    @page {
-      size: A4;
-      margin: 12mm;
-    }
-
-    :root {
-      --ink: #172331;
-      --muted: #5a6673;
-      --green: #1f6b35;
-      --green-soft: #eaf5ec;
-      --green-line: #95c59f;
-      --blue: #174b88;
-      --blue-soft: #edf5ff;
-      --yellow: #fff7df;
-      --paper: #ffffff;
-      --canvas: #eef3f1;
-      --line: #d5e1d8;
-      --gray: #f7f9f8;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      background: var(--canvas);
-      color: var(--ink);
-      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
-      letter-spacing: 0;
-      line-height: 1.55;
-    }
-
-    body {
-      padding: 24px 0 40px;
-    }
-
-    .screen-toolbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      width: 210mm;
-      margin: 0 auto 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      background: #ffffff;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      box-shadow: 0 8px 20px rgba(27, 52, 39, 0.12);
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .toolbar-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .tutor-panel {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 30;
-      width: min(380px, calc(100vw - 36px));
-      max-height: min(520px, calc(100vh - 36px));
-      display: none;
-      background: #fff;
-      border: 1.5px solid var(--green-line);
-      border-radius: 8px;
-      box-shadow: 0 16px 34px rgba(23, 35, 49, 0.18);
-      overflow: hidden;
-    }
-
-    .tutor-panel.open {
-      display: block;
-    }
-
-    .tutor-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      background: var(--green-soft);
-      color: var(--green);
-      font-size: 14px;
-      font-weight: 900;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .tutor-question {
-      padding: 9px 14px;
-      border-bottom: 1px solid var(--line);
-      background: #fbfdf8;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.45;
-    }
-
-    .tutor-close {
-      width: 28px;
-      height: 28px;
-      border: 1px solid var(--green-line);
-      border-radius: 50%;
-      background: #fff;
-      color: var(--green);
-      font-size: 18px;
-      line-height: 1;
-      cursor: pointer;
-    }
-
-    .tutor-body {
-      max-height: 430px;
-      overflow: auto;
-      padding: 14px 16px;
-      color: var(--ink);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .tutor-message {
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    .tutor-markdown {
-      display: grid;
-      gap: 8px;
-    }
-
-    .tutor-markdown h3,
-    .tutor-markdown p,
-    .tutor-markdown ul,
-    .tutor-markdown ol {
-      margin: 0;
-    }
-
-    .tutor-markdown h3 {
-      margin-top: 4px;
-      padding: 8px 10px;
-      border-left: 4px solid var(--green);
-      border-radius: 6px;
-      background: var(--green-soft);
-      color: var(--green);
-      font-size: 14px;
-      font-weight: 900;
-      line-height: 1.35;
-    }
-
-    .tutor-markdown p {
-      color: var(--ink);
-    }
-
-    .tutor-markdown ul,
-    .tutor-markdown ol {
-      padding-left: 20px;
-    }
-
-    .tutor-markdown li {
-      margin: 5px 0;
-      padding-left: 2px;
-    }
-
-    .tutor-markdown strong {
-      color: var(--green);
-      font-weight: 900;
-    }
-
-    .tutor-markdown code {
-      padding: 1px 5px;
-      border-radius: 4px;
-      background: var(--green-soft);
-      color: var(--green);
-      font-family: inherit;
-      font-weight: 800;
-    }
-
-    .tutor-field-wrap {
-      position: relative;
-      display: block;
-      width: 100%;
-    }
-
-    .tutor-field-wrap > .fill-input,
-    .tutor-field-wrap > .fill-area {
-      padding-right: 40px;
-    }
-
-    .tutor-field-button {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      z-index: 2;
-      display: inline-grid;
-      place-items: center;
-      width: 28px;
-      height: 28px;
-      border: 1px solid var(--green-line);
-      border-radius: 50%;
-      background: #fff;
-      color: var(--green);
-      cursor: pointer;
-      box-shadow: 0 3px 8px rgba(35, 70, 52, 0.12);
-    }
-
-    .tutor-field-button:hover,
-    .tutor-field-button:focus-visible {
-      background: var(--green-soft);
-      border-color: var(--green);
-      outline: none;
-    }
-
-    .tutor-field-button svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
-
-    .tutor-heading-button {
-      position: static;
-      flex: 0 0 auto;
-      margin-left: auto;
-      width: 30px;
-      height: 30px;
-      box-shadow: none;
-    }
-
-    .print-value {
-      display: none;
-    }
-
-    .toolbar-link {
-      color: var(--green);
-      font-weight: 800;
-      text-decoration: none;
-    }
-
-    .toolbar-button {
-      appearance: none;
-      border: 1px solid var(--green);
-      border-radius: 6px;
-      background: var(--green);
-      color: #fff;
-      font: inherit;
-      font-weight: 800;
-      padding: 7px 11px;
-      cursor: pointer;
-    }
-
-    .toolbar-button.secondary {
-      background: #fff;
-      color: var(--green);
-    }
-
-    .fill-input,
-    .fill-area {
-      width: 100%;
-      border: 0;
-      border-radius: 0;
-      background-color: #fff !important;
-      color: var(--ink);
-      font-family: inherit;
-      font-size: 13px;
-      line-height: 1.55;
-      outline: none;
-      appearance: none;
-      -webkit-appearance: none;
-      box-shadow: inset 0 0 0 1000px #fff;
-      -webkit-box-shadow: inset 0 0 0 1000px #fff;
-    }
-
-    .fill-input:focus,
-    .fill-area:focus,
-    .fill-input:active,
-    .fill-area:active,
-    .fill-input:-webkit-autofill,
-    .fill-area:-webkit-autofill {
-      background-color: #fff !important;
-      box-shadow: inset 0 0 0 1000px #fff;
-      -webkit-box-shadow: inset 0 0 0 1000px #fff;
-    }
-
-    .fill-input {
-      height: 28px;
-      padding: 2px 4px;
-      border-bottom: 1.5px solid #8eb99a;
-    }
-
-    .fill-input.keyword-input {
-      height: 34px;
-      padding: 4px 12px;
-      border: 1.5px solid #9fc7aa;
-      border-radius: 999px;
-      background: #fff;
-      text-align: center;
-      font-weight: 800;
-      color: var(--green);
-    }
-
-    .fill-input.synced-field {
-      background: #f7fbf8;
-      color: #255a32;
-    }
-
-    .fill-area {
-      display: block;
-      min-height: 96px;
-      resize: none;
-      padding: 4px;
-      background-color: #fff !important;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 29px,
-        #cadbd0 30px
-      );
-    }
-
-    .fill-area.short {
-      min-height: 54px;
-    }
-
-    .fill-area.tall {
-      min-height: 126px;
-    }
-
-    .meta-input {
-      height: 22px;
-      font-size: 12px;
-    }
-
-    .page {
-      width: 210mm;
-      min-height: 297mm;
-      margin: 0 auto 20px;
-      padding: 14mm 15mm 15mm;
-      background: var(--paper);
-      box-shadow: 0 12px 28px rgba(27, 52, 39, 0.12);
-      page-break-after: always;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .page:last-child {
-      page-break-after: auto;
-    }
-
-    .page::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 6mm;
-      background: linear-gradient(90deg, var(--green), #79ad70);
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: flex-end;
-      padding-top: 6mm;
-      margin-bottom: 12px;
-      border-bottom: 2px solid var(--line);
-      padding-bottom: 12px;
-    }
-
-    .kicker {
-      color: var(--green);
-      font-weight: 800;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin: 0;
-    }
-
-    h1 {
-      font-size: 30px;
-      line-height: 1.22;
-      color: var(--ink);
-      font-weight: 900;
-    }
-
-    h2 {
-      font-size: 22px;
-      line-height: 1.3;
-      color: var(--green);
-      font-weight: 900;
-      margin-bottom: 8px;
-    }
-
-    h3 {
-      font-size: 15px;
-      color: var(--ink);
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      margin-top: 7px;
-      max-width: 520px;
-    }
-
-    .meta {
-      min-width: 190px;
-      display: grid;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .meta-line {
-      display: grid;
-      grid-template-columns: 44px 1fr;
-      align-items: end;
-      gap: 7px;
-    }
-
-    .blank {
-      border-bottom: 1.5px solid #9fb7a6;
-      height: 18px;
-    }
-
-    .guide {
-      margin: 12px 0 14px;
-      padding: 12px 14px;
-      border: 1.5px solid var(--green-line);
-      border-radius: 8px;
-      background: var(--green-soft);
-      font-size: 13px;
-      color: #25452d;
-    }
-
-    .image-card {
-      margin: 12px 0 16px;
-      border: 1px solid #d8e5db;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .image-card img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    .image-card.compact {
-      margin-bottom: 12px;
-    }
-
-    .image-note {
-      padding: 8px 12px;
-      font-size: 11px;
-      color: var(--muted);
-      background: #f8faf9;
-      border-top: 1px solid #e3ebe5;
-    }
-
-    .step-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin: 10px 0 14px;
-    }
-
-    .step {
-      border: 1.5px solid var(--line);
-      border-radius: 8px;
-      background: var(--gray);
-      padding: 11px 12px;
-      min-height: 95px;
-    }
-
-    .step-num {
-      display: inline-flex;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      align-items: center;
-      justify-content: center;
-      background: var(--green);
-      color: #fff;
-      font-weight: 900;
-      font-size: 13px;
-      margin-bottom: 7px;
-    }
-
-    .step-title {
-      font-weight: 900;
-      color: var(--green);
-      font-size: 14px;
-      margin-bottom: 4px;
-    }
-
-    .step p {
-      font-size: 12px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    .job-icon-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin: 12px 0 14px;
-    }
-
-    .job-reading-image {
-      margin: 10px 0 8px;
-      border: 1px solid #d8e5db;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .job-reading-image img {
-      display: block;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: contain;
-    }
-
-    .keyword-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 9px 10px;
-      margin-top: 12px;
-    }
-
-    .criteria-write-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .criteria-write-card {
-      border: 1.5px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-      overflow: hidden;
-      min-height: 72px;
-    }
-
-    .criteria-write-head {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 5px 10px;
-      background: #f0f8f1;
-      border-bottom: 1px solid var(--line);
-      color: var(--green);
-      font-weight: 900;
-      font-size: 13px;
-      line-height: 1.3;
-      word-break: keep-all;
-    }
-
-    .criteria-write-body {
-      padding: 7px 10px 9px;
-      display: grid;
-      grid-template-columns: 1fr 2.1fr;
-      gap: 10px;
-    }
-
-    .criteria-label {
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-      margin: 0 0 5px;
-    }
-
-    .criteria-write-body .write-line {
-      height: 26px;
-    }
-
-    .criteria-write-body .ruled {
-      min-height: 30px;
-    }
-
-    .job-list-six {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px 12px;
-      margin-top: 6px;
-    }
-
-    .job-list-six .line-row {
-      margin: 3px 0;
-    }
-
-    .candidate-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2px;
-      font-size: 12px;
-    }
-
-    .candidate-table th,
-    .candidate-table td {
-      border: 1px solid var(--line);
-      padding: 5px 8px;
-      vertical-align: top;
-    }
-
-    .candidate-table th {
-      background: #f0f8f1;
-      color: var(--green);
-      font-weight: 900;
-      text-align: center;
-    }
-
-    .candidate-table .num-col {
-      width: 42px;
-      text-align: center;
-    }
-
-    .candidate-table .job-col {
-      width: 32%;
-    }
-
-    .candidate-table .fill-input {
-      height: 22px;
-    }
-
-    .candidate-table .fill-area {
-      min-height: 30px;
-      padding: 2px 4px;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 16px,
-        #cadbd0 17px
-      );
-    }
-
-    .job-icon-card {
-      border: 1.5px solid var(--line);
-      border-radius: 8px;
-      background: #fbfdfb;
-      padding: 12px;
-      min-height: 128px;
-      text-align: center;
-    }
-
-    .job-icon-card img {
-      width: 58px;
-      height: 58px;
-      object-fit: contain;
-      display: block;
-      margin: 0 auto 7px;
-    }
-
-    .job-icon-card strong {
-      display: block;
-      color: var(--green);
-      font-size: 14px;
-      margin-bottom: 5px;
-    }
-
-    .job-icon-card p {
-      margin: 0;
-      font-size: 11.5px;
-      color: var(--muted);
-      line-height: 1.45;
-      word-break: keep-all;
-    }
-
-    .write-box {
-      border: 2px solid var(--green);
-      border-radius: 9px;
-      background: #fff;
-      margin-top: 8px;
-      overflow: hidden;
-    }
-
-    .write-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 13px;
-      background: #f0f8f1;
-      color: var(--green);
-      font-weight: 900;
-      font-size: 17px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .write-body {
-      padding: 10px 12px 12px;
-    }
-
-    .line-row {
-      display: grid;
-      grid-template-columns: 34px 1fr;
-      gap: 10px;
-      align-items: end;
-      margin: 10px 0;
-    }
-
-    .circle-num {
-      width: 26px;
-      height: 26px;
-      border: 2px solid var(--green);
-      color: var(--green);
-      border-radius: 50%;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      font-size: 14px;
-    }
-
-    .write-line {
-      border-bottom: 1.5px solid #8eb99a;
-      height: 28px;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 13px;
-      margin-top: 12px;
-      align-items: stretch;
-    }
-
-    .answer-card {
-      border: 1.5px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-      padding: 13px 12px 14px;
-      min-height: 150px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .answer-card.green {
-      background: #fbfffc;
-      border-color: var(--green-line);
-    }
-
-    .answer-card.blue {
-      background: var(--blue-soft);
-      border-color: #a8c5e7;
-    }
-
-    .answer-stack {
-      border: 1.5px solid var(--green-line);
-      border-radius: 8px;
-      background: #fff;
-      padding: 12px;
-      margin-top: 12px;
-    }
-
-    .answer-stack .question-title {
-      margin-bottom: 8px;
-    }
-
-    .answer-stack .ruled {
-      min-height: 126px;
-      margin-bottom: 14px;
-    }
-
-    .answer-stack .ruled:last-child {
-      margin-bottom: 0;
-    }
-
-    .question-title {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      font-size: 15px;
-      font-weight: 900;
-      color: var(--ink);
-      margin-bottom: 8px;
-      line-height: 1.35;
-      word-break: keep-all;
-    }
-
-    .tag {
-      flex: 0 0 auto;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 28px;
-      height: 28px;
-      padding: 0 8px;
-      border-radius: 999px;
-      background: var(--green);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 900;
-    }
-
-    .ruled {
-      background-image: repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 29px,
-        #cadbd0 30px
-      );
-      min-height: 96px;
-    }
-
-    .theme-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      margin-top: 12px;
-      font-size: 12.5px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .theme-table th,
-    .theme-table td {
-      border: 0;
-      border-bottom: 1px solid var(--line);
-      padding: 11px 12px;
-      vertical-align: middle;
-      line-height: 1.55;
-      word-break: keep-all;
-    }
-
-    .theme-table th {
-      background: var(--green-soft);
-      color: var(--green);
-      font-weight: 900;
-      width: 24%;
-      text-align: center;
-      border-right: 1px solid var(--line);
-      white-space: nowrap;
-    }
-
-    .theme-table td {
-      background: #fff;
-      color: #2e3d4d;
-    }
-
-    .theme-table tr:last-child th,
-    .theme-table tr:last-child td {
-      border-bottom: 0;
-    }
-
-    .theme-table strong {
-      color: var(--green);
-      font-weight: 900;
-    }
-
-    .skill-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 11px 0;
-    }
-
-    .skill-chip {
-      border: 1px solid #bfd6c5;
-      background: #fbfffb;
-      border-radius: 6px;
-      min-height: 44px;
-      padding: 8px 9px;
-      font-size: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-weight: 800;
-      color: #245b31;
-    }
-
-    .skill-icon-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin: 12px 0;
-    }
-
-    .skill-icon-card {
-      display: grid;
-      grid-template-columns: 38px 1fr;
-      align-items: center;
-      gap: 7px;
-      min-height: 54px;
-      border: 1px solid #bfd6c5;
-      border-radius: 8px;
-      background: #fbfdfb;
-      padding: 7px 8px;
-    }
-
-    .skill-icon-card img {
-      width: 38px;
-      height: 38px;
-      object-fit: contain;
-      display: block;
-    }
-
-    .skill-icon-card span {
-      color: #1d5930;
-      font-size: 11.5px;
-      font-weight: 800;
-      line-height: 1.25;
-      word-break: keep-all;
-    }
-
-    .skill-explain-image {
-      margin: 12px 0;
-      border: 1px solid #d8e5db;
-      border-radius: 8px;
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .skill-explain-image img {
-      display: block;
-      width: 100%;
-      aspect-ratio: 1364 / 784;
-      object-fit: contain;
-    }
-
-    .poster-map {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .poster-zone {
-      border: 1.5px dashed #9db8a5;
-      border-radius: 8px;
-      background: #fbfdfb;
-      padding: 10px;
-      min-height: 112px;
-    }
-
-    .poster-zone.wide {
-      grid-column: 1 / -1;
-      min-height: 90px;
-    }
-
-    .small-label {
-      display: inline-block;
-      color: var(--green);
-      font-weight: 900;
-      margin-bottom: 7px;
-      font-size: 13px;
-    }
-
-    .footer {
-      position: absolute;
-      bottom: 7mm;
-      left: 15mm;
-      right: 15mm;
-      display: flex;
-      justify-content: space-between;
-      border-top: 1px solid var(--line);
-      padding-top: 5px;
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    @media print {
-      body {
-        background: #fff;
-        padding: 0;
-      }
-
-      .page {
-        margin: 0;
-        box-shadow: none;
-        overflow: visible;
-      }
-
-      .image-card {
-        break-inside: avoid;
-      }
-
-      .screen-toolbar,
-      .tutor-panel,
-      .tutor-field-button {
-        display: none;
-      }
-
-      .fill-input,
-      .fill-area {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      .print-ready .fill-input,
-      .print-ready .fill-area {
-        display: none !important;
-      }
-
-      .print-ready .print-value {
-        display: block;
-        width: 100%;
-        min-height: 26px;
-        color: var(--ink);
-        background: #fff;
-        font-size: 13px;
-        line-height: 1.55;
-        white-space: pre-wrap;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      .print-ready .print-value.singleline {
-        min-height: 28px;
-        padding: 2px 4px;
-        border-bottom: 1.5px solid #8eb99a;
-      }
-
-      .print-ready .print-value.multiline {
-        min-height: 54px;
-        padding: 4px;
-        background-image: repeating-linear-gradient(
-          to bottom,
-          transparent 0,
-          transparent 29px,
-          #cadbd0 30px
-        );
-      }
-
-      .candidate-table tr,
-      .response-table tr,
-      .source-table tr,
-      .info-table tr,
-      .prepare-table tr {
-        break-inside: avoid;
-      }
-    }
-
-    body.pdf-export-mode {
-      background: #fff;
-      padding: 0;
-    }
-
-    body.pdf-export-mode .screen-toolbar,
-    body.pdf-export-mode .tutor-panel,
-    body.pdf-export-mode .tutor-field-button {
-      display: none !important;
-    }
-
-    body.pdf-export-mode .page {
-      margin: 0 auto;
-      box-shadow: none;
-      overflow: visible;
+    @font-face {
+      font-family: "ONE Mobile POP";
+      src: url("assets_모둠활동지_html/ONE-Mobile-POP-subset.ttf") format("truetype");
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Pretendard";
+      src: url("assets_모둠활동지_html/Pretendard-subset.otf") format("opentype");
+      font-weight: 400;
+      font-display: swap;
     }
   </style>
 </head>
 <body data-worksheet="group">
   <div class="screen-toolbar">
-    <span><a class="toolbar-link" href="index.html">활동지 선택</a> · 브라우저에서 직접 작성할 수 있습니다. 입력 내용은 이 브라우저에 자동 저장됩니다.</span>
+    <div class="toolbar-info">
+      <a class="toolbar-link" href="index.html">← 활동지 선택</a>
+      <span>브라우저에서 작성하며 내용은 자동 저장됩니다.</span>
+      <span class="toolbar-progress" data-progress-badge>작성 0/22</span>
+    </div>
     <div class="toolbar-actions">
-      <button class="toolbar-button" type="button" data-download-pdf>PDF 저장</button>
-      <button class="toolbar-button secondary" type="button" onclick="window.print()">인쇄</button>
-      <button class="toolbar-button secondary" type="button" data-clear-form>입력 내용 초기화</button>
+      <button class="toolbar-button" type="button" data-download-pdf>PDF 저장 / 인쇄</button>
+      <button class="toolbar-button secondary" type="button" data-download-json>JSON 저장</button>
+      <button class="toolbar-button secondary" type="button" data-import-json>JSON 불러오기</button>
+      <button class="toolbar-button secondary" type="button" data-clear-form>초기화</button>
     </div>
   </div>
+
   <section class="page">
     <header class="header">
       <div>
-        <div class="kicker">모둠 활동지</div>
+        <div class="kicker">05차시 모둠 활동지</div>
         <h1>미래 직업 탐구 주제 정하기</h1>
         <p class="subtitle">개인 생각을 모둠 안에서 공유하고,<br />이어지는 조사 활동의 탐구 주제를 한 문장으로 정리합니다.</p>
       </div>
       <div class="meta">
-        <div class="meta-line"><span>학교</span><input class="fill-input meta-input" data-save="meta-school" type="text" aria-label="학교" /></div>
-        <div class="meta-line"><span>모둠</span><input class="fill-input meta-input" data-save="meta-team" type="text" aria-label="모둠" /></div>
-        <div class="meta-line"><span>이름</span><input class="fill-input meta-input" data-save="meta-name" type="text" aria-label="이름" /></div>
-        <div class="meta-line"><span>날짜</span><input class="fill-input meta-input" data-save="meta-date" type="text" aria-label="날짜" /></div>
+        <div class="meta-line"><span>학교</span><input aria-label="학교" class="fill-input meta-input" data-save="meta-school" type="text" /></div>
+        <div class="meta-line"><span>모둠</span><input aria-label="모둠" class="fill-input meta-input" data-save="meta-team" type="text" /></div>
+        <div class="meta-line"><span>이름</span><input aria-label="이름" class="fill-input meta-input" data-save="meta-name" type="text" /></div>
+        <div class="meta-line"><span>날짜</span><input aria-label="날짜" class="fill-input meta-input" data-save="meta-date" type="text" /></div>
       </div>
     </header>
 
     <div class="guide">
-      오늘은 정답을 찾는 시간이 아니라, 탐구할 후보를 넓게 모으고 모둠의 질문을 만드는 시간입니다.<br />직업명만 고르지 말고, AI가 바꿀 일과 사람에게 남는 역할을 함께 생각합니다.
+      오늘은 정답을 찾는 시간이 아니라, 탐구할 후보를 넓게 모으고 모둠의 질문을 만드는 시간입니다.<br />
+      직업명만 고르지 말고, AI가 바꿀 업무와 사람에게 남는 역할을 함께 생각합니다.
     </div>
 
-    <div class="image-card">
-      <img src="assets_모둠활동지_html/activity_reading_ai_jobs.png" alt="AI 시대 일자리 변화에 대한 읽기자료 이미지" />
-      <div class="image-note">읽기자료를 보고, 어떤 일은 줄고 어떤 일은 새로 중요해질지 생각해 봅니다.</div>
+    <div class="reading-final-art">
+      <svg class="reading-final-svg" role="img" aria-label="인공지능 시대 일자리 변화" viewBox="0 0 1672 941" xmlns="http://www.w3.org/2000/svg">
+        <title>인공지능 시대 일자리 변화</title>
+        <image href="assets_모둠활동지_html/activity_reading_ai_jobs_textless.webp" width="1672" height="941" />
+        <text id="r-title1" data-box="828,126,770,78" font-family="ONE Mobile POP" font-size="58" font-weight="400" fill="#0f6b45"><tspan x="828" y="184.0">인공지능 시대,</tspan></text>
+        <text id="r-title2" data-box="828,216,770,68" font-family="ONE Mobile POP" font-size="44" font-weight="400" fill="#173b70"><tspan x="828" y="260.0">일자리는 어떻게 달라질까?</tspan></text>
+        <text id="r-sub" data-box="828,321,770,40" font-family="Pretendard" font-size="25" font-weight="600" fill="#246b4a"><tspan x="828" y="346.0">사라지는 일보다, 달라지는 일을 함께 살펴봅시다.</tspan></text>
+        <text id="r-body" data-box="828,423,770,344" font-family="Pretendard" font-size="26" font-weight="400" fill="#263247">
+          <tspan x="828" y="449">인공지능이 발전하면 반복적이고 규칙이 분명한 일은</tspan>
+          <tspan x="828" y="490">줄어들 수 있습니다. 하지만 모든 일자리가 사라지는 것은</tspan>
+          <tspan x="828" y="531">아닙니다. 기술이 바뀌면 일의 방식도 함께 바뀌고,</tspan>
+          <tspan x="828" y="572">새로운 역할도 생겨납니다. 앞으로는 AI가 잘하는 일과</tspan>
+          <tspan x="828" y="613">사람이 더 잘할 수 있는 일을 구분하며, 변화에 맞게</tspan>
+          <tspan x="828" y="654">배우고 적응하는 능력이 중요해질 것입니다.</tspan>
+          <tspan x="828" y="695">미래 직업을 탐구할 때는 어떤 일이 줄고,</tspan>
+          <tspan x="828" y="736">어떤 일이 새로 중요해질지 함께 생각해 봅시다.</tspan>
+        </text>
+        <text id="r-ref" data-box="828,826,770,60" font-family="Pretendard" font-size="16" font-weight="400" fill="#5c6675">
+          <tspan x="828" y="842">참고자료: 한국고용정보원 「2025~2035 정성적 일자리 전망」(2026),</tspan>
+          <tspan x="828" y="866">WEF 「The Future of Jobs Report 2025」(2025)</tspan>
+        </text>
+      </svg>
     </div>
+    <div class="image-note">읽기자료를 보고, 어떤 업무는 줄고 어떤 역할은 새로 중요해질지 생각해 봅니다.</div>
 
     <div class="two-col">
       <div class="answer-card blue">
-        <div class="question-title"><span class="tag">01</span> 인공지능 시대에 사라지거나 줄어들 것으로 예상되는 직업은?</div>
-        <div class="keyword-grid" aria-label="사라지거나 줄어들 것으로 예상되는 직업 키워드">
-          <input class="fill-input keyword-input" data-save="page1-decrease-keyword-1" type="text" placeholder="예: 변호사" aria-label="사라지거나 줄어들 것으로 예상되는 직업 키워드 1" />
-          <input class="fill-input keyword-input" data-save="page1-decrease-keyword-2" type="text" aria-label="사라지거나 줄어들 것으로 예상되는 직업 키워드 2" />
-          <input class="fill-input keyword-input" data-save="page1-decrease-keyword-3" type="text" aria-label="사라지거나 줄어들 것으로 예상되는 직업 키워드 3" />
-          <input class="fill-input keyword-input" data-save="page1-decrease-keyword-4" type="text" aria-label="사라지거나 줄어들 것으로 예상되는 직업 키워드 4" />
+        <div class="question-title"><span class="tag">01</span> AI로 업무가 줄거나 방식이 크게 바뀔 것으로 예상되는 직업은?</div>
+        <div aria-label="AI로 업무가 줄거나 방식이 크게 바뀔 직업 키워드" class="keyword-grid">
+          <input aria-label="변화가 클 직업 키워드 1" class="fill-input keyword-input" data-save="page1-decrease-keyword-1" placeholder="예: 변호사(문서 검토)" type="text" />
+          <input aria-label="변화가 클 직업 키워드 2" class="fill-input keyword-input" data-save="page1-decrease-keyword-2" type="text" />
+          <input aria-label="변화가 클 직업 키워드 3" class="fill-input keyword-input" data-save="page1-decrease-keyword-3" type="text" />
+          <input aria-label="변화가 클 직업 키워드 4" class="fill-input keyword-input" data-save="page1-decrease-keyword-4" type="text" />
         </div>
       </div>
+
       <div class="answer-card green">
-        <div class="question-title"><span class="tag">02</span> 인공지능 시대에 새롭게 생겨날 직업은?</div>
-        <div class="keyword-grid" aria-label="새롭게 생겨날 직업 키워드">
-          <input class="fill-input keyword-input" data-save="page1-new-keyword-1" type="text" placeholder="예: AI 윤리 전문가" aria-label="새롭게 생겨날 직업 키워드 1" />
-          <input class="fill-input keyword-input" data-save="page1-new-keyword-2" type="text" aria-label="새롭게 생겨날 직업 키워드 2" />
-          <input class="fill-input keyword-input" data-save="page1-new-keyword-3" type="text" aria-label="새롭게 생겨날 직업 키워드 3" />
-          <input class="fill-input keyword-input" data-save="page1-new-keyword-4" type="text" aria-label="새롭게 생겨날 직업 키워드 4" />
+        <div class="question-title"><span class="tag">02</span> AI 시대에 새롭게 등장하거나 역할이 커질 직업은?</div>
+        <div aria-label="새롭게 등장하거나 역할이 커질 직업 키워드" class="keyword-grid">
+          <input aria-label="새롭게 등장하거나 역할이 커질 직업 키워드 1" class="fill-input keyword-input" data-save="page1-new-keyword-1" placeholder="예: AI 윤리 전문가" type="text" />
+          <input aria-label="새롭게 등장하거나 역할이 커질 직업 키워드 2" class="fill-input keyword-input" data-save="page1-new-keyword-2" type="text" />
+          <input aria-label="새롭게 등장하거나 역할이 커질 직업 키워드 3" class="fill-input keyword-input" data-save="page1-new-keyword-3" type="text" />
+          <input aria-label="새롭게 등장하거나 역할이 커질 직업 키워드 4" class="fill-input keyword-input" data-save="page1-new-keyword-4" type="text" />
         </div>
       </div>
     </div>
@@ -1133,7 +107,7 @@
     <table class="theme-table">
       <tr>
         <th>생각 기준</th>
-        <td><strong>직업명보다 일의 변화에 집중합니다.</strong><br />직업이 완전히 사라지는지보다, 그 직업 안에서 어떤 일이 줄어들고 어떤 일이 새로 생기는지 살펴봅니다.</td>
+        <td><strong>직업명보다 일의 변화에 집중합니다.</strong><br />직업이 완전히 사라지는지보다, 그 직업 안에서 어떤 업무가 줄어들고 어떤 역할이 새로 생기는지 살펴봅니다.</td>
       </tr>
       <tr>
         <th>모둠 공유 방법</th>
@@ -1142,7 +116,7 @@
     </table>
 
     <div class="footer">
-      <span>미래 직업 탐구 프로젝트</span>
+      <span>미래 직업 탐구 프로젝트 · 05차시</span>
       <span>1 / 3</span>
     </div>
   </section>
@@ -1156,19 +130,79 @@
       </div>
     </header>
 
-    <div class="skill-explain-image">
-      <img src="assets_모둠활동지_html/activity_skill_keywords_generated_refined_crop_v0.png" alt="인공지능 시대에 인간이 가져야 할 중요 역량 키워드 16가지" />
+    <div class="skill-final-art">
+      <svg class="skill-final-svg" role="img" aria-label="16가지 미래 역량" viewBox="0 0 1364 784" xmlns="http://www.w3.org/2000/svg">
+        <title>16가지 미래 역량 (카드를 클릭해 선택할 수 있습니다)</title>
+        <image href="assets_모둠활동지_html/activity_skill_keywords_textless.webp" width="1364" height="784" />
+        <text id="s1-title" data-box="106,35,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="106" y="60.0">감정 이해 역량</tspan></text>
+        <text id="s1-body" data-box="132,72,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="132" y="114.0">상대의 감정과 상황을</tspan><tspan x="132" y="140.0">읽고 공감하는 힘</tspan></text>
+        <text id="s2-title" data-box="447,35,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="447" y="60.0">상황 판단력</tspan></text>
+        <text id="s2-body" data-box="473,72,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="473" y="114.0">맥락을 보고</tspan><tspan x="473" y="140.0">알맞게 판단하는 힘</tspan></text>
+        <text id="s3-title" data-box="788,35,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="788" y="60.0">윤리적 판단</tspan></text>
+        <text id="s3-body" data-box="814,72,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="814" y="114.0">기술 사용의 책임과</tspan><tspan x="814" y="140.0">영향을 생각하는 힘</tspan></text>
+        <text id="s4-title" data-box="1129,35,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="1129" y="60.0">AI 활용 능력</tspan></text>
+        <text id="s4-body" data-box="1155,72,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="1155" y="114.0">AI를 목적에 맞게 쓰고</tspan><tspan x="1155" y="140.0">결과를 점검하는 힘</tspan></text>
+
+        <text id="s5-title" data-box="106,228,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="106" y="253.0">협업·소통 능력</tspan></text>
+        <text id="s5-body" data-box="132,268,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="132" y="297.0">서로의 생각을</tspan><tspan x="132" y="323.0">조율하며 함께</tspan><tspan x="132" y="349.0">해결하는 힘</tspan></text>
+        <text id="s6-title" data-box="447,228,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="447" y="253.0">빠른 습득력</tspan></text>
+        <text id="s6-body" data-box="473,268,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="473" y="310.0">새로운 지식과 도구를</tspan><tspan x="473" y="336.0">빠르게 익히는 힘</tspan></text>
+        <text id="s7-title" data-box="788,228,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="788" y="253.0">문제 해결력</tspan></text>
+        <text id="s7-body" data-box="814,268,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="814" y="310.0">문제를 나누어 보고</tspan><tspan x="814" y="336.0">해결 방법을 찾는 힘</tspan></text>
+        <text id="s8-title" data-box="1129,228,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="1129" y="253.0">창의성</tspan></text>
+        <text id="s8-body" data-box="1155,268,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="1155" y="310.0">새로운 아이디어를</tspan><tspan x="1155" y="336.0">만들어 내는 힘</tspan></text>
+
+        <text id="s9-title" data-box="106,422,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="106" y="447.0">비판적 사고</tspan></text>
+        <text id="s9-body" data-box="132,460,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="132" y="489.0">정보와 결과를</tspan><tspan x="132" y="515.0">그대로 믿지 않고</tspan><tspan x="132" y="541.0">따져 보는 힘</tspan></text>
+        <text id="s10-title" data-box="447,422,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="447" y="447.0">데이터 이해력</tspan></text>
+        <text id="s10-body" data-box="473,460,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="473" y="502.0">자료의 의미를 읽고</tspan><tspan x="473" y="528.0">근거로 활용하는 힘</tspan></text>
+        <text id="s11-title" data-box="788,422,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="788" y="447.0">자기주도 학습력</tspan></text>
+        <text id="s11-body" data-box="814,460,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="814" y="489.0">필요한 것을</tspan><tspan x="814" y="515.0">스스로 찾고</tspan><tspan x="814" y="541.0">계속 배우는 힘</tspan></text>
+        <text id="s12-title" data-box="1129,422,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="1129" y="447.0">질문하는 힘</tspan></text>
+        <text id="s12-body" data-box="1155,460,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="1155" y="502.0">좋은 탐구를 시작하는</tspan><tspan x="1155" y="528.0">질문을 만드는 힘</tspan></text>
+
+        <text id="s13-title" data-box="106,610,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="106" y="635.0">정보 검증 능력</tspan></text>
+        <text id="s13-body" data-box="132,652,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="132" y="694.0">정보의 출처와</tspan><tspan x="132" y="720.0">신뢰성을 확인하는 힘</tspan></text>
+        <text id="s14-title" data-box="447,610,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="447" y="635.0">현장 대응력</tspan></text>
+        <text id="s14-body" data-box="473,652,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="473" y="694.0">예상과 다른 상황에</tspan><tspan x="473" y="720.0">맞게 대처하는 힘</tspan></text>
+        <text id="s15-title" data-box="788,610,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="788" y="635.0">설득하는 능력</tspan></text>
+        <text id="s15-body" data-box="814,652,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="814" y="694.0">근거를 바탕으로</tspan><tspan x="814" y="720.0">생각을 이해시키는 힘</tspan></text>
+        <text id="s16-title" data-box="1129,610,209,38" font-family="ONE Mobile POP" font-size="25" font-weight="400" fill="#0f6b45"><tspan x="1129" y="635.0">도구 적응력</tspan></text>
+        <text id="s16-body" data-box="1155,652,188,90" font-family="Pretendard" font-size="20" font-weight="400" fill="#263247"><tspan x="1155" y="681.0">새로운 기술과</tspan><tspan x="1155" y="707.0">도구 변화에</tspan><tspan x="1155" y="733.0">적응하는 힘</tspan></text>
+
+        <!-- Clickable Card Overlays -->
+        <g class="skill-hit" data-skill="감정 이해 역량" role="button" tabindex="0" aria-label="감정 이해 역량 선택"><rect class="skill-hit-rect" x="2" y="11" width="327" height="189" rx="14" /><g class="skill-hit-badge" transform="translate(303,33)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="상황 판단력" role="button" tabindex="0" aria-label="상황 판단력 선택"><rect class="skill-hit-rect" x="346" y="11" width="325" height="189" rx="14" /><g class="skill-hit-badge" transform="translate(645,33)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="윤리적 판단" role="button" tabindex="0" aria-label="윤리적 판단 선택"><rect class="skill-hit-rect" x="688" y="11" width="324" height="189" rx="14" /><g class="skill-hit-badge" transform="translate(986,33)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="AI 활용 능력" role="button" tabindex="0" aria-label="AI 활용 능력 선택"><rect class="skill-hit-rect" x="1028" y="11" width="334" height="189" rx="14" /><g class="skill-hit-badge" transform="translate(1336,33)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+
+        <g class="skill-hit" data-skill="협업·소통 능력" role="button" tabindex="0" aria-label="협업·소통 능력 선택"><rect class="skill-hit-rect" x="2" y="211" width="327" height="187" rx="14" /><g class="skill-hit-badge" transform="translate(303,233)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="빠른 습득력" role="button" tabindex="0" aria-label="빠른 습득력 선택"><rect class="skill-hit-rect" x="346" y="211" width="325" height="187" rx="14" /><g class="skill-hit-badge" transform="translate(645,233)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="문제 해결력" role="button" tabindex="0" aria-label="문제 해결력 선택"><rect class="skill-hit-rect" x="688" y="211" width="324" height="187" rx="14" /><g class="skill-hit-badge" transform="translate(986,233)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="창의성" role="button" tabindex="0" aria-label="창의성 선택"><rect class="skill-hit-rect" x="1028" y="211" width="334" height="187" rx="14" /><g class="skill-hit-badge" transform="translate(1336,233)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+
+        <g class="skill-hit" data-skill="비판적 사고" role="button" tabindex="0" aria-label="비판적 사고 선택"><rect class="skill-hit-rect" x="2" y="409" width="327" height="171" rx="14" /><g class="skill-hit-badge" transform="translate(303,431)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="데이터 이해력" role="button" tabindex="0" aria-label="데이터 이해력 선택"><rect class="skill-hit-rect" x="346" y="409" width="325" height="171" rx="14" /><g class="skill-hit-badge" transform="translate(645,431)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="자기주도 학습력" role="button" tabindex="0" aria-label="자기주도 학습력 선택"><rect class="skill-hit-rect" x="688" y="409" width="324" height="171" rx="14" /><g class="skill-hit-badge" transform="translate(986,431)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="질문하는 힘" role="button" tabindex="0" aria-label="질문하는 힘 선택"><rect class="skill-hit-rect" x="1028" y="409" width="334" height="171" rx="14" /><g class="skill-hit-badge" transform="translate(1336,431)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+
+        <g class="skill-hit" data-skill="정보 검증 능력" role="button" tabindex="0" aria-label="정보 검증 능력 선택"><rect class="skill-hit-rect" x="2" y="591" width="327" height="181" rx="14" /><g class="skill-hit-badge" transform="translate(303,613)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="현장 대응력" role="button" tabindex="0" aria-label="현장 대응력 선택"><rect class="skill-hit-rect" x="346" y="591" width="325" height="181" rx="14" /><g class="skill-hit-badge" transform="translate(645,613)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="설득하는 능력" role="button" tabindex="0" aria-label="설득하는 능력 선택"><rect class="skill-hit-rect" x="688" y="591" width="324" height="181" rx="14" /><g class="skill-hit-badge" transform="translate(986,613)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+        <g class="skill-hit" data-skill="도구 적응력" role="button" tabindex="0" aria-label="도구 적응력 선택"><rect class="skill-hit-rect" x="1028" y="591" width="334" height="181" rx="14" /><g class="skill-hit-badge" transform="translate(1336,613)"><circle r="13" fill="#1f6b35"/><path d="M-5 0l3.5 3.5L6-4" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g></g>
+      </svg>
     </div>
+    <div class="skill-tip-note">💡 위 16개 역량 카드를 클릭하면 아래 입력칸에 자동으로 추가되거나 해제됩니다.</div>
 
     <div class="answer-stack">
       <div class="question-title"><span class="tag">선택</span> 우리 모둠이 생각하는 인공지능 시대에 우리가 가져야 할 중요한 역량은?</div>
-      <textarea class="fill-area tall" data-save="page2-skill-choice" aria-label="우리 모둠이 생각하는 중요한 역량"></textarea>
+      <textarea aria-label="우리 모둠이 생각하는 중요한 역량" class="fill-area tall" data-save="page2-skill-choice" placeholder="위 역량 카드를 클릭하거나 직접 입력하세요."></textarea>
       <div class="question-title"><span class="tag">이유</span> 왜 이 역량이 중요하다고 생각하나요?</div>
-      <textarea class="fill-area tall" data-save="page2-skill-reason" aria-label="이 역량이 중요한 이유"></textarea>
+      <textarea aria-label="이 역량이 중요한 이유" class="fill-area tall" data-save="page2-skill-reason" placeholder="예: AI가 만든 결과를 그대로 믿지 않고 사실 여부를 따져 보는 힘이 필요하기 때문입니다."></textarea>
     </div>
 
     <div class="footer">
-      <span>미래 직업 탐구 프로젝트</span>
+      <span>미래 직업 탐구 프로젝트 · 05차시</span>
       <span>2 / 3</span>
     </div>
   </section>
@@ -1182,8 +216,24 @@
       </div>
     </header>
 
-    <div class="job-reading-image">
-      <img src="assets_모둠활동지_html/activity_job_criteria_reading_flow_no_arrows_v0.png" alt="직업군 후보를 고를 때 살펴볼 3가지 기준 읽기자료" />
+    <div class="criteria-final-art">
+      <svg class="criteria-final-svg" role="img" aria-label="직업군 후보를 고르는 세 가지 기준" viewBox="0 0 1672 941" xmlns="http://www.w3.org/2000/svg">
+        <title>직업군 후보를 고르는 세 가지 기준</title>
+        <image href="assets_모둠활동지_html/activity_job_criteria_textless.webp" width="1672" height="941" />
+        <text id="c-main" data-box="267,91,1300,77" font-family="ONE Mobile POP" font-size="52" font-weight="400" fill="#0f6b45"><tspan x="267" y="143.0">직업군 후보를 고를 때 살펴볼 3가지 기준</tspan></text>
+        <text id="c-intro" data-box="88,245,1490,176" font-family="Pretendard" font-size="27" font-weight="400" fill="#263247">
+          <tspan x="88" y="272">미래 직업을 고를 때는 유명한 직업만 찾기보다 여러 기준을 함께 살펴보는 것이 중요합니다.</tspan>
+          <tspan x="88" y="315">먼저 내가 관심을 가지고 탐구해 보고 싶은 일인지 생각합니다.</tspan>
+          <tspan x="88" y="358">다음으로 인공지능이 발전하면서 그 일이 어떻게 달라질지 살펴봅니다.</tspan>
+          <tspan x="88" y="401">마지막으로 사회 변화와 기술 발전 속에서 앞으로 더 필요해질 일인지 생각해 봅니다.</tspan>
+        </text>
+        <text id="c0-title" data-box="178,476,350,52" font-family="ONE Mobile POP" font-size="38" font-weight="400" fill="#0f6b45"><tspan x="178" y="514.0">관심</tspan></text>
+        <text id="c0-desc" data-box="101,548,395,38" font-family="Pretendard" font-size="24" font-weight="400" fill="#263247"><tspan x="101" y="572.0">내가 관심 있는 직업 / 일</tspan></text>
+        <text id="c1-title" data-box="695,476,350,52" font-family="ONE Mobile POP" font-size="38" font-weight="400" fill="#173b70"><tspan x="695" y="514.0">AI 변화</tspan></text>
+        <text id="c1-desc" data-box="615,548,421,38" font-family="Pretendard" font-size="24" font-weight="400" fill="#263247"><tspan x="615" y="572.0">인공지능으로 역할이 달라질 직업 / 일</tspan></text>
+        <text id="c2-title" data-box="1230,476,350,52" font-family="ONE Mobile POP" font-size="38" font-weight="400" fill="#0f6b45"><tspan x="1230" y="514.0">미래 유망성</tspan></text>
+        <text id="c2-desc" data-box="1150,548,415,38" font-family="Pretendard" font-size="24" font-weight="400" fill="#263247"><tspan x="1150" y="572.0">앞으로 더 필요해질 직업 / 일</tspan></text>
+      </svg>
     </div>
 
     <div class="write-box">
@@ -1191,7 +241,7 @@
         <span>🔎 조사하고 싶은 직업군 / 일과 이유를 적어봅시다</span>
       </div>
       <div class="write-body">
-        <table class="candidate-table" aria-label="조사하고 싶은 직업군 또는 일과 이유">
+        <table aria-label="조사하고 싶은 직업군 또는 일과 이유" class="candidate-table">
           <thead>
             <tr>
               <th class="num-col">번호</th>
@@ -1202,33 +252,33 @@
           <tbody>
             <tr>
               <td class="num-col">1</td>
-              <td><input class="fill-input" data-save="page3-candidate-1" type="text" aria-label="첫 번째 후보 직업군 또는 일" /></td>
-              <td><textarea class="fill-area" data-save="page3-reason-1" aria-label="첫 번째 후보 이유"></textarea></td>
+              <td><input aria-label="첫 번째 후보 직업군 또는 일" class="fill-input" data-save="page3-candidate-1" type="text" /></td>
+              <td><textarea aria-label="첫 번째 후보 이유" class="fill-area" data-save="page3-reason-1" rows="1"></textarea></td>
             </tr>
             <tr>
               <td class="num-col">2</td>
-              <td><input class="fill-input" data-save="page3-candidate-2" type="text" aria-label="두 번째 후보 직업군 또는 일" /></td>
-              <td><textarea class="fill-area" data-save="page3-reason-2" aria-label="두 번째 후보 이유"></textarea></td>
+              <td><input aria-label="두 번째 후보 직업군 또는 일" class="fill-input" data-save="page3-candidate-2" type="text" /></td>
+              <td><textarea aria-label="두 번째 후보 이유" class="fill-area" data-save="page3-reason-2" rows="1"></textarea></td>
             </tr>
             <tr>
               <td class="num-col">3</td>
-              <td><input class="fill-input" data-save="page3-candidate-3" type="text" aria-label="세 번째 후보 직업군 또는 일" /></td>
-              <td><textarea class="fill-area" data-save="page3-reason-3" aria-label="세 번째 후보 이유"></textarea></td>
+              <td><input aria-label="세 번째 후보 직업군 또는 일" class="fill-input" data-save="page3-candidate-3" type="text" /></td>
+              <td><textarea aria-label="세 번째 후보 이유" class="fill-area" data-save="page3-reason-3" rows="1"></textarea></td>
             </tr>
             <tr>
               <td class="num-col">4</td>
-              <td><input class="fill-input" data-save="page3-candidate-4" type="text" aria-label="네 번째 후보 직업군 또는 일" /></td>
-              <td><textarea class="fill-area" data-save="page3-reason-4" aria-label="네 번째 후보 이유"></textarea></td>
+              <td><input aria-label="네 번째 후보 직업군 또는 일" class="fill-input" data-save="page3-candidate-4" type="text" /></td>
+              <td><textarea aria-label="네 번째 후보 이유" class="fill-area" data-save="page3-reason-4" rows="1"></textarea></td>
             </tr>
             <tr>
               <td class="num-col">5</td>
-              <td><input class="fill-input" data-save="page3-candidate-5" type="text" aria-label="다섯 번째 후보 직업군 또는 일" /></td>
-              <td><textarea class="fill-area" data-save="page3-reason-5" aria-label="다섯 번째 후보 이유"></textarea></td>
+              <td><input aria-label="다섯 번째 후보 직업군 또는 일" class="fill-input" data-save="page3-candidate-5" type="text" /></td>
+              <td><textarea aria-label="다섯 번째 후보 이유" class="fill-area" data-save="page3-reason-5" rows="1"></textarea></td>
             </tr>
             <tr>
               <td class="num-col">6</td>
-              <td><input class="fill-input" data-save="page3-candidate-6" type="text" aria-label="여섯 번째 후보 직업군 또는 일" /></td>
-              <td><textarea class="fill-area" data-save="page3-reason-6" aria-label="여섯 번째 후보 이유"></textarea></td>
+              <td><input aria-label="여섯 번째 후보 직업군 또는 일" class="fill-input" data-save="page3-candidate-6" type="text" /></td>
+              <td><textarea aria-label="여섯 번째 후보 이유" class="fill-area" data-save="page3-reason-6" rows="1"></textarea></td>
             </tr>
           </tbody>
         </table>
@@ -1236,40 +286,14 @@
     </div>
 
     <div class="footer">
-      <span>미래 직업 탐구 프로젝트</span>
+      <span>미래 직업 탐구 프로젝트 · 05차시</span>
       <span>3 / 3</span>
     </div>
   </section>
 
-  <script>
-    (() => {
-      const storagePrefix = "future-job-worksheet-v0:";
-      const fields = document.querySelectorAll("[data-save]");
-
-      fields.forEach((field) => {
-        const key = storagePrefix + field.dataset.save;
-        const savedValue = localStorage.getItem(key);
-        if (savedValue !== null) {
-          field.value = savedValue;
-        }
-        field.addEventListener("input", () => {
-          localStorage.setItem(key, field.value);
-        });
-      });
-
-      const clearButton = document.querySelector("[data-clear-form]");
-      clearButton?.addEventListener("click", () => {
-        const confirmed = window.confirm("현재 브라우저에 저장된 입력 내용을 모두 지울까요?");
-        if (!confirmed) return;
-        fields.forEach((field) => {
-          localStorage.removeItem(storagePrefix + field.dataset.save);
-          field.value = "";
-        });
-      });
-    })();
-  </script>
-  <script src="pdf-export.js?v=20260706-9"></script>
-  <script src="tutor-config.js?v=20260706-5"></script>
-  <script src="tutor.js?v=20260706-5"></script>
+  <script src="worksheet-common.js?v=20261125-1"></script>
+  <script src="pdf-export.js?v=20261125-1"></script>
+  <script src="tutor-config.js?v=20261125-1"></script>
+  <script src="tutor.js?v=20261125-1"></script>
 </body>
 </html>

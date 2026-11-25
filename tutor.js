@@ -1,5 +1,9 @@
 (function () {
   const apiUrl = window.TUTOR_API_URL || "";
+  const REQUEST_TIMEOUT_MS = 20000;
+
+  let activeController = null;
+  let lastTargetFactory = null;
 
   function cleanText(value) {
     return String(value || "").replace(/\s+/g, " ").trim();
@@ -22,26 +26,64 @@
   }
 
   function findSection(field) {
-    const page = field.closest(".page");
+    const page = field?.closest(".page");
     const heading = cleanText(page?.querySelector("h1")?.innerText);
-    const box = field.closest(".write-box");
+    const box = field?.closest(".write-box");
     const boxTitle = cleanText(box?.querySelector(".write-head")?.innerText);
     return [heading, boxTitle].filter(Boolean).join(" / ");
+  }
+
+  function collectWorksheetContext() {
+    const worksheet = document.body.dataset.worksheet || "worksheet";
+    if (worksheet === "personal") {
+      return {
+        job: cleanText(document.querySelector('[data-save="topic-job"]')?.value).slice(0, 80),
+        jobReason: cleanText(document.querySelector('[data-save="topic-reason"]')?.value).slice(0, 240)
+      };
+    }
+    if (worksheet === "group") {
+      return {
+        selectedSkill: cleanText(document.querySelector('[data-save="page2-skill-choice"]')?.value).slice(0, 120)
+      };
+    }
+    return {};
   }
 
   function createPanel() {
     const panel = document.createElement("aside");
     panel.className = "tutor-panel";
+    panel.setAttribute("aria-label", "AI 작성 팁 패널");
     panel.innerHTML = [
       '<div class="tutor-head">',
       '<strong>AI 작성 팁</strong>',
+      '<div class="tutor-head-actions">',
+      '<button type="button" class="tutor-retry" hidden>다시 받기</button>',
       '<button type="button" class="tutor-close" aria-label="AI 작성 팁 닫기">×</button>',
+      "</div>",
       "</div>",
       '<div class="tutor-question">질문 옆 아이콘을 눌러 작성 팁을 받아보세요.</div>',
       '<div class="tutor-body"><div class="tutor-message">도움이 필요한 질문의 아이콘을 선택하세요.</div></div>'
     ].join("");
     document.body.appendChild(panel);
-    panel.querySelector(".tutor-close").addEventListener("click", () => panel.classList.remove("open"));
+
+    const closePanel = () => {
+      if (activeController) {
+        activeController.abort();
+        activeController = null;
+      }
+      panel.classList.remove("open");
+    };
+
+    panel.querySelector(".tutor-close").addEventListener("click", closePanel);
+    panel.querySelector(".tutor-retry").addEventListener("click", () => {
+      if (lastTargetFactory) requestTip(panel, lastTargetFactory);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && panel.classList.contains("open")) {
+        closePanel();
+      }
+    });
+
     return panel;
   }
 
@@ -189,14 +231,18 @@
     button.title = "이 질문 AI 작성 팁";
     button.setAttribute("aria-label", "이 질문 AI 작성 팁 보기");
     button.innerHTML = iconSvg();
-    button.addEventListener("click", () => requestTip(panel, targetFactory()));
+    button.addEventListener("click", () => requestTip(panel, targetFactory));
     return button;
   }
 
-  async function requestTip(panel, target) {
+  async function requestTip(panel, targetFactory) {
+    lastTargetFactory = targetFactory;
+    const target = typeof targetFactory === "function" ? targetFactory() : targetFactory;
+
     panel.classList.add("open");
     const body = panel.querySelector(".tutor-body");
     const questionLine = panel.querySelector(".tutor-question");
+    const retryButton = panel.querySelector(".tutor-retry");
 
     if (!apiUrl) {
       showMessage(body, "AI 튜터 API 주소가 아직 설정되지 않았습니다.");
@@ -204,37 +250,61 @@
     }
 
     if (!target) {
-      showMessage(body, "먼저 도움을 받고 싶은 작성 칸에 내용을 조금 적어주세요.");
+      showMessage(body, "먼저 도움을 받고 싶은 작성 칸을 선택해 주세요.");
       return;
     }
 
     questionLine.textContent = target.question;
 
-    if (!target.answer) {
-      showMessage(body, "먼저 이 칸에 생각을 조금 적어주세요.");
-      target.field.focus();
-      return;
+    if (activeController) {
+      activeController.abort();
     }
+    const controller = new AbortController();
+    activeController = controller;
+    const timeoutId = window.setTimeout(() => controller.abort("timeout"), REQUEST_TIMEOUT_MS);
 
-    showMessage(body, "작성 팁을 불러오는 중입니다...");
+    retryButton.hidden = false;
+    retryButton.disabled = true;
+    showMessage(
+      body,
+      target.answer
+        ? "작성 내용을 바탕으로 팁을 불러오는 중입니다..."
+        : "빈칸이어도 괜찮아요! 시작 방향과 예시를 불러오는 중입니다..."
+    );
 
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: { "content-type": "application/json" },
+        signal: controller.signal,
         body: JSON.stringify({
           worksheet: document.body.dataset.worksheet || "worksheet",
           section: target.section,
           question: target.question,
-          answer: target.answer
+          answer: target.answer,
+          context: collectWorksheetContext()
         })
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "요청에 실패했습니다.");
-      body.innerHTML = renderMarkdown(data.tip);
+      if (activeController === controller) {
+        body.innerHTML = renderMarkdown(data.tip);
+      }
     } catch (error) {
-      showMessage(body, error.message);
+      if (error?.name === "AbortError" && controller.signal.reason !== "timeout") {
+        return;
+      }
+      const message = controller.signal.reason === "timeout"
+        ? "응답 시간이 초과되었습니다. '다시 받기'를 눌러 다시 시도해 주세요."
+        : (error.message || "AI 튜터를 불러오지 못했습니다.");
+      showMessage(body, message);
+    } finally {
+      window.clearTimeout(timeoutId);
+      if (activeController === controller) {
+        activeController = null;
+        retryButton.disabled = false;
+      }
     }
   }
 
@@ -248,7 +318,7 @@
       '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">',
       '<path d="M12 3l1.6 4.2L18 8.8l-4.4 1.6L12 15l-1.6-4.6L6 8.8l4.4-1.6L12 3z"></path>',
       '<path d="M18 14l.8 2.2L21 17l-2.2.8L18 20l-.8-2.2L15 17l2.2-.8L18 14z"></path>',
-      '</svg>'
+      "</svg>"
     ].join("");
   }
 
@@ -309,7 +379,10 @@
     const decreaseCard = decreaseField?.closest(".answer-card");
     const decreaseTitle = decreaseCard?.querySelector(".question-title");
     if (decreaseCard && decreaseTitle && !decreaseCard.querySelector("[data-group-tutor='decrease']")) {
-      const button = createIconButton(panel, () => getKeywordTarget(decreaseCard, "page1-decrease-keyword-", "사라지거나 줄어들 것으로 예상되는 직업"));
+      const button = createIconButton(
+        panel,
+        () => getKeywordTarget(decreaseCard, "page1-decrease-keyword-", "AI로 업무가 줄거나 방식이 크게 바뀔 것으로 예상되는 직업")
+      );
       button.dataset.groupTutor = "decrease";
       appendHeadingButton(decreaseTitle, button);
     }
@@ -318,7 +391,10 @@
     const newCard = newField?.closest(".answer-card");
     const newTitle = newCard?.querySelector(".question-title");
     if (newCard && newTitle && !newCard.querySelector("[data-group-tutor='new']")) {
-      const button = createIconButton(panel, () => getKeywordTarget(newCard, "page1-new-keyword-", "새롭게 생겨날 직업"));
+      const button = createIconButton(
+        panel,
+        () => getKeywordTarget(newCard, "page1-new-keyword-", "AI 시대에 새롭게 등장하거나 역할이 커질 직업")
+      );
       button.dataset.groupTutor = "new";
       appendHeadingButton(newTitle, button);
     }

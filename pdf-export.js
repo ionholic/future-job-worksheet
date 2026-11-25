@@ -25,13 +25,23 @@
   function valueLines(field) {
     const value = field.value.trim();
     if (value) return value;
-    const rows = Math.max(Number(field.getAttribute("rows")) || 1, Math.round((field.offsetHeight || 26) / 26));
+    const rows = Math.max(
+      Number(field.getAttribute("rows")) || 1,
+      Math.round((field.offsetHeight || 26) / 26)
+    );
     return Array.from({ length: rows }, () => "\u00a0").join("\n");
   }
 
   function createPrintValue(field) {
     const value = document.createElement("div");
-    value.className = `print-value ${field.tagName === "TEXTAREA" ? "multiline" : "singleline"}`;
+    const classes = [
+      "print-value",
+      field.tagName === "TEXTAREA" ? "multiline" : "singleline"
+    ];
+    if (field.classList.contains("keyword-input")) {
+      classes.push("keyword-pill");
+    }
+    value.className = classes.join(" ");
     value.textContent = valueLines(field);
     field.insertAdjacentElement("afterend", value);
     return value;

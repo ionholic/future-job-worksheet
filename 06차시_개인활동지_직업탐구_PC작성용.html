@@ -4,823 +4,28 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>개인 활동지 - 개인 직업 탐구</title>
-  <style>
-    @page {
-      size: A4;
-      margin: 12mm;
-    }
-
-    :root {
-      --ink: #172331;
-      --muted: #5a6673;
-      --green: #1f6b35;
-      --green-soft: #eaf5ec;
-      --green-line: #95c59f;
-      --blue: #174b88;
-      --blue-soft: #edf5ff;
-      --paper: #ffffff;
-      --canvas: #eef3f1;
-      --line: #d5e1d8;
-      --gray: #f7f9f8;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      background: var(--canvas);
-      color: var(--ink);
-      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
-      letter-spacing: 0;
-      line-height: 1.55;
-    }
-
-    body {
-      padding: 24px 0 40px;
-    }
-
-    .screen-toolbar {
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      width: 210mm;
-      margin: 0 auto 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      background: #ffffff;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      box-shadow: 0 8px 20px rgba(27, 52, 39, 0.12);
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .toolbar-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .tutor-panel {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      z-index: 30;
-      width: min(380px, calc(100vw - 36px));
-      max-height: min(520px, calc(100vh - 36px));
-      display: none;
-      background: #fff;
-      border: 1.5px solid var(--green-line);
-      border-radius: 8px;
-      box-shadow: 0 16px 34px rgba(23, 35, 49, 0.18);
-      overflow: hidden;
-    }
-
-    .tutor-panel.open {
-      display: block;
-    }
-
-    .tutor-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 12px;
-      background: var(--green-soft);
-      color: var(--green);
-      font-size: 14px;
-      font-weight: 900;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .tutor-question {
-      padding: 9px 14px;
-      border-bottom: 1px solid var(--line);
-      background: #fbfdf8;
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
-      line-height: 1.45;
-    }
-
-    .tutor-close {
-      width: 28px;
-      height: 28px;
-      border: 1px solid var(--green-line);
-      border-radius: 50%;
-      background: #fff;
-      color: var(--green);
-      font-size: 18px;
-      line-height: 1;
-      cursor: pointer;
-    }
-
-    .tutor-body {
-      max-height: 430px;
-      overflow: auto;
-      padding: 14px 16px;
-      color: var(--ink);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-
-    .tutor-message {
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    .tutor-markdown {
-      display: grid;
-      gap: 8px;
-    }
-
-    .tutor-markdown h3,
-    .tutor-markdown p,
-    .tutor-markdown ul,
-    .tutor-markdown ol {
-      margin: 0;
-    }
-
-    .tutor-markdown h3 {
-      margin-top: 4px;
-      padding: 8px 10px;
-      border-left: 4px solid var(--green);
-      border-radius: 6px;
-      background: var(--green-soft);
-      color: var(--green);
-      font-size: 14px;
-      font-weight: 900;
-      line-height: 1.35;
-    }
-
-    .tutor-markdown p {
-      color: var(--ink);
-    }
-
-    .tutor-markdown ul,
-    .tutor-markdown ol {
-      padding-left: 20px;
-    }
-
-    .tutor-markdown li {
-      margin: 5px 0;
-      padding-left: 2px;
-    }
-
-    .tutor-markdown strong {
-      color: var(--green);
-      font-weight: 900;
-    }
-
-    .tutor-markdown code {
-      padding: 1px 5px;
-      border-radius: 4px;
-      background: var(--green-soft);
-      color: var(--green);
-      font-family: inherit;
-      font-weight: 800;
-    }
-
-    .tutor-field-wrap {
-      position: relative;
-      display: block;
-      width: 100%;
-    }
-
-    .tutor-field-wrap > .fill-input,
-    .tutor-field-wrap > .fill-area {
-      padding-right: 40px;
-    }
-
-    .tutor-field-button {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      z-index: 2;
-      display: inline-grid;
-      place-items: center;
-      width: 28px;
-      height: 28px;
-      border: 1px solid var(--green-line);
-      border-radius: 50%;
-      background: #fff;
-      color: var(--green);
-      cursor: pointer;
-      box-shadow: 0 3px 8px rgba(35, 70, 52, 0.12);
-    }
-
-    .tutor-field-button:hover,
-    .tutor-field-button:focus-visible {
-      background: var(--green-soft);
-      border-color: var(--green);
-      outline: none;
-    }
-
-    .tutor-field-button svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
-
-    .tutor-heading-button {
-      position: static;
-      flex: 0 0 auto;
-      margin-left: auto;
-      width: 30px;
-      height: 30px;
-      box-shadow: none;
-    }
-
-    .print-value {
-      display: none;
-    }
-
-    .toolbar-link {
-      color: var(--green);
-      font-weight: 800;
-      text-decoration: none;
-    }
-
-    .toolbar-button {
-      appearance: none;
-      border: 1px solid var(--green);
-      border-radius: 6px;
-      background: var(--green);
-      color: #fff;
-      font: inherit;
-      font-weight: 800;
-      padding: 7px 11px;
-      cursor: pointer;
-    }
-
-    .toolbar-button.secondary {
-      background: #fff;
-      color: var(--green);
-    }
-
-    .fill-input,
-    .fill-area {
-      width: 100%;
-      border: 0;
-      border-radius: 0;
-      background-color: #fff !important;
-      color: var(--ink);
-      font-family: inherit;
-      font-size: 12px;
-      line-height: 1.55;
-      outline: none;
-      appearance: none;
-      -webkit-appearance: none;
-      box-shadow: inset 0 0 0 1000px #fff;
-      -webkit-box-shadow: inset 0 0 0 1000px #fff;
-    }
-
-    .fill-input:focus,
-    .fill-area:focus,
-    .fill-input:active,
-    .fill-area:active,
-    .fill-input:-webkit-autofill,
-    .fill-area:-webkit-autofill {
-      background-color: #fff !important;
-      box-shadow: inset 0 0 0 1000px #fff;
-      -webkit-box-shadow: inset 0 0 0 1000px #fff;
-    }
-
-    .fill-input {
-      height: 27px;
-      padding: 2px 4px;
-      border-bottom: 1.5px solid #8eb99a;
-    }
-
-    .fill-area {
-      display: block;
-      min-height: 78px;
-      resize: none;
-      padding: 3px 4px;
-      background-color: #fff !important;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 25px,
-        #cadbd0 26px
-      );
-    }
-
-    .fill-area.short {
-      min-height: 52px;
-    }
-
-    .fill-area.tall {
-      min-height: 120px;
-    }
-
-    .meta-input {
-      height: 20px;
-      font-size: 12px;
-    }
-
-    .page {
-      width: 210mm;
-      min-height: 297mm;
-      margin: 0 auto 20px;
-      padding: 14mm 15mm 15mm;
-      background: var(--paper);
-      box-shadow: 0 12px 28px rgba(27, 52, 39, 0.12);
-      page-break-after: always;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .page:last-child {
-      page-break-after: auto;
-    }
-
-    .page::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 6mm;
-      background: linear-gradient(90deg, var(--green), #79ad70);
-    }
-
-    .header {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: flex-end;
-      padding-top: 6mm;
-      margin-bottom: 12px;
-      border-bottom: 2px solid var(--line);
-      padding-bottom: 12px;
-    }
-
-    .kicker {
-      color: var(--green);
-      font-weight: 800;
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-
-    h1,
-    h2,
-    h3,
-    p {
-      margin: 0;
-    }
-
-    h1 {
-      font-size: 30px;
-      line-height: 1.22;
-      color: var(--ink);
-      font-weight: 900;
-    }
-
-    h2 {
-      font-size: 21px;
-      line-height: 1.3;
-      color: var(--green);
-      font-weight: 900;
-      margin-bottom: 8px;
-    }
-
-    .subtitle {
-      font-size: 14px;
-      color: var(--muted);
-      margin-top: 7px;
-      max-width: 530px;
-    }
-
-    .meta {
-      min-width: 190px;
-      display: grid;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .meta-line {
-      display: grid;
-      grid-template-columns: 50px 1fr;
-      align-items: end;
-      gap: 7px;
-    }
-
-    .blank {
-      border-bottom: 1.5px solid #9fb7a6;
-      height: 18px;
-    }
-
-    .guide {
-      margin: 12px 0 14px;
-      padding: 12px 14px;
-      border: 1.5px solid var(--green-line);
-      border-radius: 8px;
-      background: var(--green-soft);
-      font-size: 13px;
-      color: #25452d;
-    }
-
-    .flow-strip {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin: 12px 0 14px;
-    }
-
-    .flow-step {
-      border: 1.5px solid var(--line);
-      border-radius: 8px;
-      background: #fbfdfb;
-      padding: 10px 9px;
-      min-height: 76px;
-    }
-
-    .flow-num {
-      display: inline-flex;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      align-items: center;
-      justify-content: center;
-      background: var(--green);
-      color: #fff;
-      font-weight: 900;
-      font-size: 12px;
-      margin-bottom: 6px;
-    }
-
-    .flow-title {
-      color: var(--green);
-      font-size: 13px;
-      font-weight: 900;
-      margin-bottom: 3px;
-    }
-
-    .flow-step p {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.4;
-      word-break: keep-all;
-    }
-
-    .write-box {
-      border: 2px solid var(--green);
-      border-radius: 9px;
-      background: #fff;
-      margin-top: 10px;
-      overflow: hidden;
-    }
-
-    .write-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 9px 13px;
-      background: #f0f8f1;
-      color: var(--green);
-      font-weight: 900;
-      font-size: 16px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .write-body {
-      padding: 11px 13px 13px;
-    }
-
-    .info-table,
-    .response-table,
-    .source-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      font-size: 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      overflow: hidden;
-      table-layout: fixed;
-    }
-
-    .info-table th,
-    .info-table td,
-    .response-table th,
-    .response-table td,
-    .source-table th,
-    .source-table td {
-      border: 0;
-      border-right: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      padding: 8px 10px;
-      vertical-align: middle;
-      line-height: 1.45;
-    }
-
-    .info-table th:last-child,
-    .info-table td:last-child,
-    .response-table th:last-child,
-    .response-table td:last-child,
-    .source-table th:last-child,
-    .source-table td:last-child {
-      border-right: 0;
-    }
-
-    .info-table tr:last-child th,
-    .info-table tr:last-child td,
-    .response-table tr:last-child th,
-    .response-table tr:last-child td,
-    .source-table tr:last-child th,
-    .source-table tr:last-child td {
-      border-bottom: 0;
-    }
-
-    .info-table th,
-    .response-table th,
-    .source-table th {
-      background: var(--green-soft);
-      color: var(--green);
-      font-weight: 900;
-      text-align: center;
-      word-break: keep-all;
-    }
-
-    .info-table th {
-      width: 26%;
-    }
-
-    .response-table th {
-      width: 28%;
-    }
-
-    .response-table .question-cell {
-      line-height: 1.42;
-      letter-spacing: 0;
-    }
-
-    .source-table th {
-      text-align: center;
-    }
-
-    .source-table th:nth-child(1),
-    .source-table td:nth-child(1) {
-      width: 34%;
-    }
-
-    .source-table th:nth-child(2),
-    .source-table td:nth-child(2) {
-      width: 66%;
-    }
-
-    .info-table td,
-    .response-table td,
-    .source-table td {
-      background: #fff;
-    }
-
-    .info-table .fill-input,
-    .response-table .fill-input,
-    .source-table .fill-input,
-    .prepare-table .fill-input {
-      height: 28px;
-      padding: 3px 5px;
-    }
-
-    .info-table .fill-area,
-    .response-table .fill-area {
-      display: block;
-      margin: 0;
-    }
-
-    .source-table td {
-      padding: 8px;
-    }
-
-    .source-table .fill-input {
-      font-size: 11.5px;
-    }
-
-    .write-line {
-      border-bottom: 1.5px solid #8eb99a;
-      height: 27px;
-    }
-
-    .ruled {
-      background-image: repeating-linear-gradient(
-        to bottom,
-        transparent 0,
-        transparent 25px,
-        #cadbd0 26px
-      );
-      min-height: 78px;
-    }
-
-    .ruled.short {
-      min-height: 52px;
-    }
-
-    .ruled.tall {
-      min-height: 120px;
-    }
-
-    .two-col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 10px;
-    }
-
-    .check-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .check-card {
-      border: 1.5px solid var(--line);
-      border-radius: 8px;
-      background: #fbfdfb;
-      padding: 9px;
-      min-height: 82px;
-    }
-
-    .check-card strong {
-      display: block;
-      color: var(--green);
-      font-size: 13px;
-      margin-bottom: 4px;
-    }
-
-    .check-card p {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.4;
-      word-break: keep-all;
-    }
-
-    .prepare-table th:first-child {
-      width: 30%;
-    }
-
-    .prepare-table th:last-child,
-    .prepare-table td:last-child {
-      width: 70%;
-    }
-
-    .prepare-table th {
-      text-align: center;
-    }
-
-    .prepare-table td {
-      padding: 8px 10px;
-    }
-
-    .prepare-type {
-      background: #fbfdfb;
-      color: var(--green);
-      font-weight: 900;
-      text-align: center;
-      word-break: keep-all;
-    }
-
-    .prepare-type small {
-      display: block;
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 10.5px;
-      font-weight: 700;
-      line-height: 1.35;
-    }
-
-    .core-sentence {
-      border: 2px solid var(--green);
-      border-radius: 9px;
-      background: #fbfffc;
-      padding: 12px;
-      margin-top: 10px;
-    }
-
-    .footer {
-      position: absolute;
-      bottom: 7mm;
-      left: 15mm;
-      right: 15mm;
-      display: flex;
-      justify-content: space-between;
-      border-top: 1px solid var(--line);
-      padding-top: 5px;
-      font-size: 10px;
-      color: var(--muted);
-    }
-
-    @media print {
-      body {
-        background: #fff;
-        padding: 0;
-      }
-
-      .page {
-        margin: 0;
-        box-shadow: none;
-        overflow: visible;
-      }
-
-      .screen-toolbar,
-      .tutor-panel,
-      .tutor-field-button {
-        display: none;
-      }
-
-      .fill-input,
-      .fill-area {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      .print-ready .fill-input,
-      .print-ready .fill-area {
-        display: none !important;
-      }
-
-      .print-ready .print-value {
-        display: block;
-        width: 100%;
-        min-height: 26px;
-        color: var(--ink);
-        background: #fff;
-        font-size: 12px;
-        line-height: 1.55;
-        white-space: pre-wrap;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      .print-ready .print-value.singleline {
-        min-height: 27px;
-        padding: 2px 4px;
-        border-bottom: 1.5px solid #8eb99a;
-      }
-
-      .print-ready .print-value.multiline {
-        min-height: 52px;
-        padding: 3px 4px;
-        background-image: repeating-linear-gradient(
-          to bottom,
-          transparent 0,
-          transparent 25px,
-          #cadbd0 26px
-        );
-      }
-
-      .candidate-table tr,
-      .response-table tr,
-      .source-table tr,
-      .info-table tr,
-      .prepare-table tr {
-        break-inside: avoid;
-      }
-    }
-
-    body.pdf-export-mode {
-      background: #fff;
-      padding: 0;
-    }
-
-    body.pdf-export-mode .screen-toolbar,
-    body.pdf-export-mode .tutor-panel,
-    body.pdf-export-mode .tutor-field-button {
-      display: none !important;
-    }
-
-    body.pdf-export-mode .page {
-      margin: 0 auto;
-      box-shadow: none;
-      overflow: visible;
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <link rel="stylesheet" href="worksheet.css?v=20261125-1" />
 </head>
 <body data-worksheet="personal">
   <div class="screen-toolbar">
-    <span><a class="toolbar-link" href="index.html">활동지 선택</a> · 브라우저에서 직접 작성할 수 있습니다. 입력 내용은 이 브라우저에 자동 저장됩니다.</span>
+    <div class="toolbar-info">
+      <a class="toolbar-link" href="index.html">← 활동지 선택</a>
+      <span>브라우저에서 작성하며 내용은 자동 저장됩니다.</span>
+      <span class="toolbar-progress" data-progress-badge>작성 0/20</span>
+    </div>
     <div class="toolbar-actions">
-      <button class="toolbar-button" type="button" data-download-pdf>PDF 저장</button>
-      <button class="toolbar-button secondary" type="button" onclick="window.print()">인쇄</button>
-      <button class="toolbar-button secondary" type="button" data-clear-form>입력 내용 초기화</button>
+      <button class="toolbar-button" type="button" data-download-pdf>PDF 저장 / 인쇄</button>
+      <button class="toolbar-button secondary" type="button" data-download-json>JSON 저장</button>
+      <button class="toolbar-button secondary" type="button" data-import-json>JSON 불러오기</button>
+      <button class="toolbar-button secondary" type="button" data-clear-form>초기화</button>
     </div>
   </div>
+
   <section class="page">
     <header class="header">
       <div>
-        <div class="kicker">개인 활동지</div>
+        <div class="kicker">06차시 개인 활동지</div>
         <h1>내가 탐구할 직업 정리하기</h1>
         <p class="subtitle">모둠 주제 안에서 내가 맡은 직업을 조사하고,<br />발표자료에 넣을 핵심 내용을 정리합니다.</p>
       </div>
@@ -831,6 +36,8 @@
         <div class="meta-line"><span>날짜</span><input class="fill-input meta-input" data-save="meta-date" type="text" aria-label="날짜" /></div>
       </div>
     </header>
+
+    <div class="group-sync-banner" data-group-sync hidden></div>
 
     <div class="guide">
       오늘의 조사는 직업명을 찾는 활동이 아니라, 내가 선택한 직업을 현재 모습, AI로 인한 변화, 인간에게 남는 역할, 진로 준비로 나누어 분석하는 활동입니다.
@@ -865,11 +72,11 @@
         <table class="info-table">
           <tr>
             <th>내가 탐구할 직업 / 진로</th>
-            <td><input class="fill-input" data-save="topic-job" type="text" aria-label="내가 탐구할 직업 또는 진로" /></td>
+            <td><input class="fill-input" data-save="topic-job" type="text" aria-label="내가 탐구할 직업 또는 진로" placeholder="예: 헤어디자이너, 영상 편집자, 데이터 분석가" /></td>
           </tr>
           <tr>
             <th>이 직업을 선택한 이유</th>
-            <td><textarea class="fill-area short" data-save="topic-reason" aria-label="이 직업을 선택한 이유"></textarea></td>
+            <td><textarea class="fill-area short" data-save="topic-reason" aria-label="이 직업을 선택한 이유" rows="2"></textarea></td>
           </tr>
         </table>
       </div>
@@ -879,26 +86,30 @@
       <div class="write-head">2. 참고한 자료 기록하기</div>
       <div class="write-body">
         <table class="source-table">
-          <tr>
-            <th>출처</th>
-            <th>확인한 내용</th>
-          </tr>
-          <tr>
-            <td><input class="fill-input" data-save="source-origin-1" type="text" aria-label="첫 번째 자료 출처" /></td>
-            <td><input class="fill-input" data-save="source-note-1" type="text" aria-label="첫 번째 자료에서 확인한 내용" /></td>
-          </tr>
-          <tr>
-            <td><input class="fill-input" data-save="source-origin-2" type="text" aria-label="두 번째 자료 출처" /></td>
-            <td><input class="fill-input" data-save="source-note-2" type="text" aria-label="두 번째 자료에서 확인한 내용" /></td>
-          </tr>
-          <tr>
-            <td><input class="fill-input" data-save="source-origin-3" type="text" aria-label="세 번째 자료 출처" /></td>
-            <td><input class="fill-input" data-save="source-note-3" type="text" aria-label="세 번째 자료에서 확인한 내용" /></td>
-          </tr>
-          <tr>
-            <td><input class="fill-input" data-save="source-origin-4" type="text" aria-label="네 번째 자료 출처" /></td>
-            <td><input class="fill-input" data-save="source-note-4" type="text" aria-label="네 번째 자료에서 확인한 내용" /></td>
-          </tr>
+          <thead>
+            <tr>
+              <th>출처 (기관명 · 자료명 · 연도 · URL)</th>
+              <th>확인한 내용</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><input class="fill-input" data-save="source-origin-1" type="text" aria-label="첫 번째 자료 출처" placeholder="예: 한국고용정보원 워크넷(2026)" /></td>
+              <td><textarea class="fill-area compact" data-save="source-note-1" aria-label="첫 번째 자료에서 확인한 내용" rows="2" placeholder="예: 주요 직무, 자격 요건, AI 활용 변화 근거"></textarea></td>
+            </tr>
+            <tr>
+              <td><input class="fill-input" data-save="source-origin-2" type="text" aria-label="두 번째 자료 출처" /></td>
+              <td><textarea class="fill-area compact" data-save="source-note-2" aria-label="두 번째 자료에서 확인한 내용" rows="2"></textarea></td>
+            </tr>
+            <tr>
+              <td><input class="fill-input" data-save="source-origin-3" type="text" aria-label="세 번째 자료 출처" /></td>
+              <td><textarea class="fill-area compact" data-save="source-note-3" aria-label="세 번째 자료에서 확인한 내용" rows="2"></textarea></td>
+            </tr>
+            <tr>
+              <td><input class="fill-input" data-save="source-origin-4" type="text" aria-label="네 번째 자료 출처" /></td>
+              <td><textarea class="fill-area compact" data-save="source-note-4" aria-label="네 번째 자료에서 확인한 내용" rows="2"></textarea></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -923,7 +134,7 @@
     </div>
 
     <div class="footer">
-      <span>미래 직업 탐구 프로젝트</span>
+      <span>미래 직업 탐구 프로젝트 · 06차시</span>
       <span>1 / 3</span>
     </div>
   </section>
@@ -943,11 +154,11 @@
         <table class="response-table">
           <tr>
             <th>현재 이 직업이 하는 일은?</th>
-            <td><textarea class="fill-area tall" data-save="current-work" aria-label="현재 이 직업이 하는 일"></textarea></td>
+            <td><textarea class="fill-area tall" data-save="current-work" aria-label="현재 이 직업이 하는 일" rows="4"></textarea></td>
           </tr>
           <tr>
             <th>현재 요구되는 역량 혹은 자격은?</th>
-            <td><textarea class="fill-area" data-save="current-requirements" aria-label="현재 요구되는 역량 혹은 자격"></textarea></td>
+            <td><textarea class="fill-area" data-save="current-requirements" aria-label="현재 요구되는 역량 혹은 자격" rows="3"></textarea></td>
           </tr>
         </table>
       </div>
@@ -959,26 +170,26 @@
         <table class="response-table">
           <tr>
             <th class="question-cell">AI가 대신하거나<br />줄일 수 있는 업무는?</th>
-            <td><textarea class="fill-area" data-save="ai-reduced-work" aria-label="AI가 대신하거나 줄일 수 있는 업무"></textarea></td>
+            <td><textarea class="fill-area" data-save="ai-reduced-work" aria-label="AI가 대신하거나 줄일 수 있는 업무" rows="3"></textarea></td>
           </tr>
           <tr>
             <th class="question-cell">AI로 인해<br />가장 크게 변화될 일은?</th>
-            <td><textarea class="fill-area" data-save="ai-big-change" aria-label="AI로 인해 가장 크게 변화될 일"></textarea></td>
+            <td><textarea class="fill-area" data-save="ai-big-change" aria-label="AI로 인해 가장 크게 변화될 일" rows="3"></textarea></td>
           </tr>
           <tr>
             <th class="question-cell">사람이 확인하거나<br />판단해야 할 부분은?</th>
-            <td><textarea class="fill-area" data-save="human-judgement" aria-label="사람이 확인하거나 판단해야 할 부분"></textarea></td>
+            <td><textarea class="fill-area" data-save="human-judgement" aria-label="사람이 확인하거나 판단해야 할 부분" rows="3"></textarea></td>
           </tr>
         </table>
       </div>
     </div>
 
     <div class="guide">
-      AI가 직업 전체를 없앤다고 단정하지 말고, 어떤 업무가 줄어들고 어떤 업무가 새로 중요해질지 구분해 봅니다.
+      AI가 직업 전체를 없앤다고 단정하지 말고, 어떤 업무가 줄어들고 어떤 업무가 새로 중요해질지 근거와 함께 구분해 봅니다.
     </div>
 
     <div class="footer">
-      <span>미래 직업 탐구 프로젝트</span>
+      <span>미래 직업 탐구 프로젝트 · 06차시</span>
       <span>2 / 3</span>
     </div>
   </section>
@@ -998,11 +209,11 @@
         <table class="response-table">
           <tr>
             <th class="question-cell">AI가 대신하기 어려운<br />인간의 역할은?</th>
-            <td><textarea class="fill-area" data-save="human-role" aria-label="AI가 대신하기 어려운 인간의 역할"></textarea></td>
+            <td><textarea class="fill-area" data-save="human-role" aria-label="AI가 대신하기 어려운 인간의 역할" rows="3"></textarea></td>
           </tr>
           <tr>
             <th class="question-cell">미래에 더<br />중요해질 역량은?</th>
-            <td><textarea class="fill-area" data-save="future-skill" aria-label="미래에 더 중요해질 역량"></textarea></td>
+            <td><textarea class="fill-area" data-save="future-skill" aria-label="미래에 더 중요해질 역량" rows="3"></textarea></td>
           </tr>
         </table>
       </div>
@@ -1016,18 +227,22 @@
             <col style="width: 30%;" />
             <col style="width: 70%;" />
           </colgroup>
-          <tr>
-            <th>진로 준비 유형</th>
-            <th>내가 실천할 구체적인 준비</th>
-          </tr>
-          <tr>
-            <td class="prepare-type">길러야 할 역량<small>예: 자격증, 교육, 필요한 공부</small></td>
-            <td><input class="fill-input" data-save="prepare-method-1" type="text" aria-label="길러야 할 역량을 위한 구체적인 준비" /></td>
-          </tr>
-          <tr>
-            <td class="prepare-type">경험 쌓기<small>예: 동아리, 체험활동, 프로젝트, 인터뷰</small></td>
-            <td><input class="fill-input" data-save="prepare-method-2" type="text" aria-label="경험을 쌓기 위한 구체적인 준비" /></td>
-          </tr>
+          <thead>
+            <tr>
+              <th>진로 준비 유형</th>
+              <th>내가 실천할 구체적인 준비</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="prepare-type">길러야 할 역량<small>예: 자격증, 교육, 필요한 공부</small></td>
+              <td><textarea class="fill-area compact" data-save="prepare-method-1" aria-label="길러야 할 역량을 위한 구체적인 준비" rows="2"></textarea></td>
+            </tr>
+            <tr>
+              <td class="prepare-type">경험 쌓기<small>예: 동아리, 체험활동, 프로젝트, 인터뷰</small></td>
+              <td><textarea class="fill-area compact" data-save="prepare-method-2" aria-label="경험을 쌓기 위한 구체적인 준비" rows="2"></textarea></td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -1036,7 +251,7 @@
       <div class="write-head">7. 발표자료에 넣을 핵심 한 문장</div>
       <div class="write-body">
         <div class="core-sentence">
-          <textarea class="fill-area short" data-save="core-sentence" aria-label="발표자료에 넣을 핵심 한 문장"></textarea>
+          <textarea class="fill-area short" data-save="core-sentence" aria-label="발표자료에 넣을 핵심 한 문장" rows="2" placeholder="예: AI가 단순 작업을 돕더라도, 고객의 마음을 읽고 스타일을 제안하는 것은 여전히 사람의 역할입니다."></textarea>
         </div>
       </div>
     </div>
@@ -1048,44 +263,19 @@
       </div>
       <div class="check-card">
         <strong>보완할 내용</strong>
-        <p>근거가 부족한 내용이나 더 찾아볼 자료를 표시해 둡니다.</p>
+        <p>근거가 부족한 내용이나 더 찾아볼 자료의 출처를 함께 표시해 둡니다.</p>
       </div>
     </div>
 
     <div class="footer">
-      <span>미래 직업 탐구 프로젝트</span>
+      <span>미래 직업 탐구 프로젝트 · 06차시</span>
       <span>3 / 3</span>
     </div>
   </section>
-  <script>
-    (() => {
-      const storagePrefix = "future-job-personal-worksheet-v0:";
-      const fields = document.querySelectorAll("[data-save]");
 
-      fields.forEach((field) => {
-        const key = storagePrefix + field.dataset.save;
-        const savedValue = localStorage.getItem(key);
-        if (savedValue !== null) {
-          field.value = savedValue;
-        }
-        field.addEventListener("input", () => {
-          localStorage.setItem(key, field.value);
-        });
-      });
-
-      const clearButton = document.querySelector("[data-clear-form]");
-      clearButton?.addEventListener("click", () => {
-        const confirmed = window.confirm("현재 브라우저에 저장된 입력 내용을 모두 지울까요?");
-        if (!confirmed) return;
-        fields.forEach((field) => {
-          localStorage.removeItem(storagePrefix + field.dataset.save);
-          field.value = "";
-        });
-      });
-    })();
-  </script>
-  <script src="pdf-export.js?v=20260706-9"></script>
-  <script src="tutor-config.js?v=20260706-5"></script>
-  <script src="tutor.js?v=20260706-5"></script>
+  <script src="worksheet-common.js?v=20261125-1"></script>
+  <script src="pdf-export.js?v=20261125-1"></script>
+  <script src="tutor-config.js?v=20261125-1"></script>
+  <script src="tutor.js?v=20261125-1"></script>
 </body>
 </html>

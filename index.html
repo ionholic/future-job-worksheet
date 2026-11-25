@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>미래직업탐구 보고서 활동지</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
   <style>
     :root {
       --ink: #172331;
@@ -28,13 +29,13 @@
       min-height: 100%;
       background: var(--canvas);
       color: var(--ink);
-      font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+      font-family: "Pretendard Variable", "Pretendard", "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
       letter-spacing: 0;
       line-height: 1.55;
     }
 
     body {
-      padding: 36px 20px;
+      padding: 36px 20px 56px;
     }
 
     .shell {
@@ -43,7 +44,7 @@
     }
 
     .hero {
-      padding: 28px 0 24px;
+      padding: 20px 0 24px;
       border-bottom: 2px solid var(--line);
     }
 
@@ -56,40 +57,43 @@
 
     h1,
     h2,
+    h3,
     p {
       margin: 0;
     }
 
     h1 {
-      max-width: 760px;
-      font-size: clamp(32px, 5vw, 52px);
-      line-height: 1.12;
+      max-width: 780px;
+      font-size: clamp(30px, 4.6vw, 48px);
+      line-height: 1.15;
       font-weight: 900;
+      word-break: keep-all;
     }
 
     .summary {
-      max-width: 760px;
+      max-width: 780px;
       margin-top: 12px;
       color: var(--muted);
-      font-size: 17px;
+      font-size: 16.5px;
+      word-break: keep-all;
     }
 
     .worksheet-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 16px;
+      gap: 18px;
       margin-top: 24px;
     }
 
     .worksheet-card {
       display: flex;
       flex-direction: column;
-      min-height: 260px;
+      min-height: 310px;
       padding: 22px;
       background: var(--paper);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      box-shadow: 0 12px 28px rgba(27, 52, 39, 0.10);
+      border-radius: 10px;
+      box-shadow: 0 12px 28px rgba(27, 52, 39, 0.09);
     }
 
     .worksheet-card.group {
@@ -100,6 +104,23 @@
       border-top: 6px solid var(--blue);
     }
 
+    .session-badge {
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 10px;
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .personal .session-badge {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
     h2 {
       font-size: 24px;
       line-height: 1.25;
@@ -107,15 +128,59 @@
     }
 
     .card-copy {
-      margin-top: 10px;
+      margin-top: 8px;
       color: var(--muted);
       font-size: 15px;
+      word-break: keep-all;
+    }
+
+    .progress-box {
+      margin-top: 16px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fafcfb;
+    }
+
+    .progress-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+
+    .progress-meta {
+      color: var(--muted);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .progress-track {
+      height: 7px;
+      border-radius: 999px;
+      background: #e2eae4;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: var(--green);
+      transition: width 0.25s ease;
+    }
+
+    .personal .progress-fill {
+      background: var(--blue);
     }
 
     .feature-list {
       display: grid;
       gap: 8px;
-      margin: 18px 0 22px;
+      margin: 16px 0 22px;
       padding: 0;
       list-style: none;
       color: #334155;
@@ -150,37 +215,53 @@
       min-height: 44px;
       margin-top: auto;
       padding: 10px 14px;
-      border-radius: 6px;
+      border-radius: 8px;
       background: var(--green);
       color: #fff;
       font-weight: 900;
       text-decoration: none;
+      transition: opacity 0.15s ease;
+    }
+
+    .open-link:hover {
+      opacity: 0.92;
     }
 
     .personal .open-link {
       background: var(--blue);
     }
 
-    .notice {
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
       margin-top: 18px;
+    }
+
+    .guide-card {
       padding: 14px 16px;
       background: #fff;
       border: 1px solid var(--line);
       border-radius: 8px;
+      font-size: 13.5px;
       color: var(--muted);
-      font-size: 14px;
+      word-break: keep-all;
     }
 
-    .notice strong {
+    .guide-card strong {
+      display: block;
       color: var(--ink);
+      margin-bottom: 4px;
+      font-size: 14px;
     }
 
     @media (max-width: 760px) {
       body {
-        padding: 24px 14px;
+        padding: 22px 14px 36px;
       }
 
-      .worksheet-grid {
+      .worksheet-grid,
+      .guide-grid {
         grid-template-columns: 1fr;
       }
 
@@ -193,38 +274,120 @@
 <body>
   <main class="shell">
     <section class="hero">
-      <div class="kicker">미래직업탐구 보고서 활동지</div>
+      <div class="kicker">디지털새싹 · AI 미래직업탐구 프로젝트</div>
       <h1>작성할 활동지를 선택하세요</h1>
-      <p class="summary">학교와 이름을 입력한 뒤 브라우저에서 바로 작성하고, PDF 파일로 저장할 수 있습니다.</p>
+      <p class="summary">브라우저에서 바로 작성하고 <strong>AI 작성 팁</strong>으로 답변을 점검한 뒤, <strong>PDF</strong>와 <strong>JSON 인풋데이터</strong>로 저장해 7차시 발표 보고서에 활용할 수 있습니다.</p>
     </section>
 
     <section class="worksheet-grid" aria-label="활동지 선택">
       <article class="worksheet-card group">
+        <span class="session-badge">05차시 · 모둠 활동</span>
         <h2>모둠 활동지</h2>
-        <p class="card-copy">AI 시대 직업 변화 읽기자료를 바탕으로 모둠의 탐구 주제를 정합니다.</p>
+        <p class="card-copy">AI 시대 일자리 변화 읽기자료와 16가지 미래 역량을 바탕으로 모둠의 탐구 주제를 정합니다.</p>
+        <div class="progress-box" data-progress-card="group">
+          <div class="progress-row">
+            <span data-progress-label>작성 0 / 22 항목</span>
+            <span class="progress-meta" data-progress-time>저장 기록 없음</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
         <ul class="feature-list">
-          <li>미래 직업 탐구 주제 정하기</li>
-          <li>학교, 모둠, 이름, 날짜 입력</li>
-          <li>브라우저 자동 저장 및 PDF 저장 지원</li>
+          <li>16가지 미래 역량 카드 클릭 선택 지원</li>
+          <li>문항별 AI 작성 팁 (작성 전·후 맞춤 안내)</li>
+          <li>PDF 저장 및 06차시 연계용 JSON 저장·불러오기</li>
         </ul>
-        <a class="open-link" href="05차시_모둠활동지_PC작성용.html">모둠 활동지 작성</a>
+        <a class="open-link" href="05차시_모둠활동지_PC작성용.html">모둠 활동지 작성하기</a>
       </article>
 
       <article class="worksheet-card personal">
+        <span class="session-badge">06차시 · 개인 활동</span>
         <h2>개인 활동지</h2>
-        <p class="card-copy">내가 맡은 직업을 조사하고 발표자료에 넣을 핵심 내용을 정리합니다.</p>
+        <p class="card-copy">내가 맡은 직업의 현재 모습, AI로 달라질 업무, 인간 역할과 진로 준비를 정리합니다.</p>
+        <div class="progress-box" data-progress-card="personal">
+          <div class="progress-row">
+            <span data-progress-label>작성 0 / 20 항목</span>
+            <span class="progress-meta" data-progress-time>저장 기록 없음</span>
+          </div>
+          <div class="progress-track"><div class="progress-fill"></div></div>
+        </div>
         <ul class="feature-list">
-          <li>개인 직업 탐구 정리</li>
-          <li>학교, 모둠, 이름, 날짜 입력</li>
-          <li>브라우저 자동 저장 및 PDF 저장 지원</li>
+          <li>05차시 모둠 데이터에서 직업 후보 바로 가져오기</li>
+          <li>내가 고른 직업 문맥 기반 AI 작성 팁</li>
+          <li>PDF 저장 및 7차시 보고서용 JSON 저장·불러오기</li>
         </ul>
-        <a class="open-link" href="06차시_개인활동지_직업탐구_PC작성용.html">개인 활동지 작성</a>
+        <a class="open-link" href="06차시_개인활동지_직업탐구_PC작성용.html">개인 활동지 작성하기</a>
       </article>
     </section>
 
-    <aside class="notice">
-      <strong>PDF 저장:</strong> 활동지 작성 화면에서 <strong>PDF 저장</strong>을 누르면 작성 내용이 출력용 텍스트로 정리된 뒤 저장 창이 열립니다. 파일명은 학교·이름을 반영해 자동 제안됩니다.
-    </aside>
+    <section class="guide-grid" aria-label="활용 안내">
+      <div class="guide-card">
+        <strong>1. 자동 저장 &amp; 이어쓰기</strong>
+        입력 내용은 현재 브라우저에 자동 저장됩니다. 공용 PC나 다른 자리에서는 <strong>JSON 저장 / 불러오기</strong>로 이어서 작성하세요.
+      </div>
+      <div class="guide-card">
+        <strong>2. AI 작성 팁 활용</strong>
+        각 문항 옆 반짝임 아이콘을 누르면 빈칸일 때는 작성 방향을, 작성 후에는 보완 힌트를 안내합니다. (학교·이름 등 개인정보는 전송되지 않습니다.)
+      </div>
+      <div class="guide-card">
+        <strong>3. PDF &amp; 보고서 연계</strong>
+        <strong>PDF 저장 / 인쇄</strong>는 학교·모둠·이름을 반영해 파일명을 자동 제안하며, JSON 파일은 7차시 발표 보고서 제작 자료로 쓰입니다.
+      </div>
+    </section>
   </main>
+
+  <script>
+    (function () {
+      const specs = [
+        {
+          id: "group",
+          prefix: "future-job-worksheet-v0:",
+          keys: [
+            "page1-decrease-keyword-1", "page1-decrease-keyword-2", "page1-decrease-keyword-3", "page1-decrease-keyword-4",
+            "page1-new-keyword-1", "page1-new-keyword-2", "page1-new-keyword-3", "page1-new-keyword-4",
+            "page2-skill-choice", "page2-skill-reason",
+            "page3-candidate-1", "page3-reason-1", "page3-candidate-2", "page3-reason-2",
+            "page3-candidate-3", "page3-reason-3", "page3-candidate-4", "page3-reason-4",
+            "page3-candidate-5", "page3-reason-5", "page3-candidate-6", "page3-reason-6"
+          ]
+        },
+        {
+          id: "personal",
+          prefix: "future-job-personal-worksheet-v0:",
+          keys: [
+            "topic-job", "topic-reason",
+            "source-origin-1", "source-note-1", "source-origin-2", "source-note-2",
+            "source-origin-3", "source-note-3", "source-origin-4", "source-note-4",
+            "current-work", "current-requirements",
+            "ai-reduced-work", "ai-big-change", "human-judgement",
+            "human-role", "future-skill",
+            "prepare-method-1", "prepare-method-2", "core-sentence"
+          ]
+        }
+      ];
+
+      function formatTime(iso) {
+        if (!iso) return "저장 기록 없음";
+        const d = new Date(iso);
+        if (Number.isNaN(d.getTime())) return "저장됨";
+        return `최근 저장 ${d.toLocaleDateString("ko-KR")} ${d.toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}`;
+      }
+
+      specs.forEach((spec) => {
+        const box = document.querySelector(`[data-progress-card="${spec.id}"]`);
+        if (!box) return;
+        const filled = spec.keys.filter((key) => {
+          const val = localStorage.getItem(spec.prefix + key);
+          return val && val.trim().length > 0;
+        }).length;
+        const total = spec.keys.length;
+        const pct = Math.round((filled / total) * 100);
+        const updatedAt = localStorage.getItem(spec.prefix + "__updatedAt");
+
+        box.querySelector("[data-progress-label]").textContent = `작성 ${filled} / ${total} 항목 (${pct}%)`;
+        box.querySelector("[data-progress-time]").textContent = filled > 0 ? formatTime(updatedAt) : "저장 기록 없음";
+        box.querySelector(".progress-fill").style.width = `${pct}%`;
+      });
+    })();
+  </script>
 </body>
 </html>
